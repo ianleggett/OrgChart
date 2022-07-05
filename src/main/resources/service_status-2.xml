@@ -1,0 +1,31 @@
+<scxml initial="idle" name="atm.connRestored" version="0.9" xmlns="http://www.w3.org/2005/07/scxml"><!--   node-size-and-position x=0.0 y=0.0 w=890.0 h=640.0  -->
+ <state id="idle"><!--   node-size-and-position x=99.9585391783458 y=30.0 w=30.0 h=20.0  -->
+  <transition event="atm.init" target="startup"></transition>
+ </state>
+ <state id="startup"><!--   node-size-and-position x=509.9585391783458 y=90.0 w=50.0 h=20.0  -->
+  <transition event="atm.error" target="errorRetry"></transition>
+  <transition event="atm.havetoken" target="init"></transition>
+ </state>
+ <state id="disconnected"><!--   node-size-and-position x=349.95853917834575 y=270.0 w=90.0 h=20.0  -->
+  <transition event="atm.ok" target="errorRetry"></transition>
+ </state>
+ <state id="init"><!--   node-size-and-position x=170.0 y=130.0 w=100.0 h=30.0  -->
+  <transition event="atm.ok" target="running"></transition>
+  <transition event="atm.fail" target="errorRetry"></transition>
+ </state>
+ <state id="running"><!--   node-size-and-position x=110.0 y=270.0 w=90.0 h=40.0  -->
+  <transition event="atm.close" target="disconnected"></transition>
+  <transition event="atm.stop" target="shutdown"></transition>
+ </state>
+ <state id="shutdown"><!--   node-size-and-position x=190.0 y=440.0 w=90.0 h=30.0  -->
+  <transition event="atm.ok" target="stopped"></transition>
+ </state>
+ <state id="stopped"><!--   node-size-and-position x=440.0 y=450.0 w=80.0 h=30.0  -->
+  <transition event="atm.init" target="startup"></transition>
+ </state>
+ <state id="errorRetry"><!--   node-size-and-position x=690.0 y=150.0 w=80.0 h=30.0  -->
+  <transition event="atm.retry" target="startup"><!--   edge-path [startup]  x=660.0 y=80.0  --></transition>
+  <transition event="atm.error" target="ErrorFail"></transition>
+ </state>
+ <state id="ErrorFail"><!--   node-size-and-position x=730.0 y=430.0 w=80.0 h=30.0  --></state>
+</scxml>
