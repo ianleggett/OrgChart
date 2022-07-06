@@ -27,22 +27,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import webtool.mail.EmailSettings;
 import webtool.pojo.Ccy;
-import webtool.pojo.EmailBodyJson;
 import webtool.pojo.EmailMsg;
 import webtool.pojo.RespStatus;
 import webtool.pojo.TableData;
 import webtool.pojo.UserAndRole;
-import webtool.pojo.WebKeyValue;
 import webtool.repository.CcyRepository;
 import webtool.repository.UserRepository;
 import webtool.service.SystemStatusService;
-import webtool.utils.CryptNetworkConfig;
 import webtool.utils.MailDAO;
 import webtool.utils.Settings;
 import webtool.utils.SettingsDAO;
 import webtool.utils.SystemMessage;
 import webtool.utils.SystemStatus;
-import webtool.utils.UtilsWeb;
 
 @Secured({ "ROLE_ADMIN" })
 @RestController

@@ -254,7 +254,7 @@ public class SettingsDAO {
 	}
 
 	private void setCryptoDefaults(CryptoSettings cset) {
-		cset.setConfig("local", new CryptNetworkConfig()); //http://localhost:7545","0x19Ef82a5E30d8C01969b6629c8d3feAc96626753","0xf188e20ADBe88deC9B5CfCb5a518A69A4416581c","http://localhost/txn")
+		cset.setConfig("local", new CryptNetworkConfig()); 
 		cset.setSelectedProfile("local");		
 	}
 	
