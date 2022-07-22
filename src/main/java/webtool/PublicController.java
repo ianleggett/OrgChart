@@ -98,8 +98,15 @@ public class PublicController {
 
 	@RequestMapping(value = "/orgdata.json", method = RequestMethod.GET)
 	@ResponseBody
-	public MermaidData getMermaid() {		
-		return new MermaidData("graph TD; A[Client] --> B[Load Balancer]; B --> C[Server01]; B --> D[Server02]");		
+	public MermaidData getMermaid() {
+		return new MermaidData("graph TD\n"
+				+ "A1209(Billy Blogs<br/>VP, Engineering)\n"
+				+ "A1209 --- A1067(Mike Magee<br/>Senior Engineering Manager)\n"
+				+ "A1209 --- A1331(Barry White<br/>Director of Engineering WMC)\n"
+				+ "A1209 --- A1102(Maddie Magee<br/>Software Engineer)\n"
+				+ "style A1102 fill:#ffdddd,stroke:#333,stroke-width:px\n"
+				+ "A1209 --- A1348(Bill Bailey<br/>Senior Engineering Manager)\n"
+				+ "");		
 	}
 	
 //	@RequestMapping(value = "/")

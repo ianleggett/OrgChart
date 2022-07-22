@@ -70,6 +70,16 @@
 		 
 		var config = { startOnLoad:true, 
 			flowchart:{ useMaxWidth:false, htmlLabels:true, curve:'cardinal', },
+			themeVariables: {
+			    nodeBorder : "#004990",
+			    mainBkg : "#c9d7e4",
+			    nodeTextColor : "#274059",
+			    fontFamily: "arial",
+			    fontSize: "11px"
+			 },
+			 er:{
+				 entityPadding: 5
+			 },
 			securityLevel:'loose',
 			};		
 		let insert = function (code) {

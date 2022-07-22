@@ -81,13 +81,13 @@ public class MvcConfiguration implements WebMvcConfigurer {
 //		// TODO Auto-generated method stub
 //		
 //	}
-//
+
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 	    //registry.addViewController("/").setViewName("forward:/react/index.html");
 		registry.addViewController("/").setViewName("main");
 	}
-//
+
 //	@Override
 //	public void configureAsyncSupport(AsyncSupportConfigurer arg0) {
 //		// TODO Auto-generated method stub
