@@ -1,6 +1,7 @@
 package webtool;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import webtool.pojo.FileDB;
 import webtool.pojo.MermaidData;
+import webtool.pojo.OEdge;
+import webtool.pojo.OElements;
+import webtool.pojo.ONode;
+import webtool.pojo.OrgElements;
 import webtool.pojo.RespStatus;
 import webtool.pojo.UserAndRole;
 import webtool.service.ShimPublicData;
@@ -96,17 +101,35 @@ public class PublicController {
 		response.getOutputStream().close();
 	}
 
+//	@RequestMapping(value = "/orgdata.json", method = RequestMethod.GET)
+//	@ResponseBody
+//	public MermaidData getMermaid() {
+//		return new MermaidData("graph TD\n"
+//				+ "A1209(Billy Blogs<br/>VP, Engineering)\n"
+//				+ "A1209 --- A1067(Mike Magee<br/>Senior Engineering Manager)\n"
+//				+ "A1209 --- A1331(Barry White<br/>Director of Engineering WMC)\n"
+//				+ "A1209 --- A1102(Maddie Magee<br/>Software Engineer)\n"
+//				+ "style A1102 fill:#ffdddd,stroke:#333,stroke-width:px\n"
+//				+ "A1209 --- A1348(Bill Bailey<br/>Senior Engineering Manager)\n"
+//				+ "");		
+//	}
+	
 	@RequestMapping(value = "/orgdata.json", method = RequestMethod.GET)
 	@ResponseBody
-	public MermaidData getMermaid() {
-		return new MermaidData("graph TD\n"
-				+ "A1209(Billy Blogs<br/>VP, Engineering)\n"
-				+ "A1209 --- A1067(Mike Magee<br/>Senior Engineering Manager)\n"
-				+ "A1209 --- A1331(Barry White<br/>Director of Engineering WMC)\n"
-				+ "A1209 --- A1102(Maddie Magee<br/>Software Engineer)\n"
-				+ "style A1102 fill:#ffdddd,stroke:#333,stroke-width:px\n"
-				+ "A1209 --- A1348(Bill Bailey<br/>Senior Engineering Manager)\n"
-				+ "");		
+	public OrgElements getOrgElements() {
+				
+		List<ONode> nodes = List.of(
+				new ONode("A1209","Billy Blogs"),
+				new ONode("A1067","Mike Magee<br/>Senior Engineering Manager"),
+				new ONode("A1331","Barry White<br/>Director of Engineering WMC"),
+				new ONode("A1348","Bill Bailey<br/>Senior Engineering Manager")
+				);
+		List<OEdge> edges = List.of();
+		
+		OElements oe = new OElements(nodes,edges);
+		
+		return new OrgElements(oe);
+		
 	}
 	
 //	@RequestMapping(value = "/")
