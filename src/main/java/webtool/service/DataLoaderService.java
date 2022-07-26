@@ -1,6 +1,5 @@
 package webtool.service;
 
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,25 +8,47 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import webtool.pojo.Employee;
+import webtool.pojo.GroupCSV;
+import webtool.pojo.OrgContainer;
+import webtool.pojo.OrgView;
+import webtool.pojo.OrgViewItem;
 import webtool.pojo.Person;
-
-
+import webtool.repository.EmployeeRepository;
+import webtool.repository.OrgContainerRepository;
+import webtool.repository.OrgViewItemRepository;
+import webtool.repository.OrgViewRepository;
+import webtool.utils.CoreDAO;
 
 @Service("DataLoaderService")
 public class DataLoaderService {
 	static Logger log = Logger.getLogger(DataLoaderService.class);
+
+	@Autowired
+	EmployeeRepository employeeRepository;
+
+	@Autowired
+	OrgViewRepository orgViewRepository;
+	@Autowired
+	OrgViewItemRepository orgViewItemRepository;
 	
+	@Autowired
+	OrgContainerRepository orgContainerRepository;
+
 	static String FILT = "engineering";
 	static final boolean USE_FILT = false;
 	static final boolean USE_ID = true;
 
-	static final String FILE = "/Users/i34976/Downloads/PDT_PA_Teams_Mapping_Line Managers.csv";
+	static final String EMPL_FILE = "/home/ian/Downloads/PDT_PA_Teams_Mapping_Line Managers.csv";
+	static final String GRP_FILE = "/home/ian/Downloads/PDT-default-group.csv";
 	// static final String FILE = "/Users/i34976/Downloads/PDT_test.csv";
 	Map<String, List<Person>> mgrMap = new HashMap<String, List<Person>>();
 	Map<String, Person> perMap = new HashMap<String, Person>();
@@ -35,7 +56,32 @@ public class DataLoaderService {
 	Map<String, List<Person>> deptBox = new HashMap<String, List<Person>>();
 
 	Map<String, String> mgrDecl = new HashMap<String, String>();
-	
+
+	public void loadCSV(String args[]) throws IOException {
+
+		final String RobAntczak = "23105";
+		final String Deepak = "31493";
+		final String IanLeggett = "34976";
+
+		load();
+		// link managers?
+		// app.link();
+//		buildOrg();
+//		
+//		// Creates a FileOutputStream
+//		PrintWriter output = new PrintWriter(new FileOutputStream("deepak.txt"), true);
+//		setOutput(output);
+//		Person per = getPerson(Deepak);
+//		recursePeople(per);					
+		
+
+//		displayTeams();
+		// create a big chart
+
+		// list people by mgr ref --- person details
+
+	}
+
 	PrintWriter prn;
 
 	public PrintWriter getOutput() {
@@ -45,6 +91,14 @@ public class DataLoaderService {
 	public void setOutput(PrintWriter output) {
 		this.prn = output;
 		prn.println("graph LR");
+	}
+
+	public void initDefaultView() {
+		// check if defaultview exists,if not create this
+		Optional<OrgView> defView = orgViewRepository.findById(CoreDAO.DEFAULT_VIEW);
+		if (!defView.isPresent()) {
+			orgViewRepository.save(new OrgView(CoreDAO.DEFAULT_VIEW, "Default Org view", true));
+		}
 	}
 
 	// remove middle names and white spaces
@@ -81,50 +135,132 @@ public class DataLoaderService {
 		mList.add(per);
 	}
 
-	public void addTeamBox(final Person per) {
-		if (per.getTeamName().isEmpty())
-			return;
-		String tname = !per.getTeamName().isEmpty() ? per.getTeamName() : "none";
-		List<Person> mList = teamBox.get(tname);
-		if (mList == null) {
-			mList = new ArrayList<Person>();
-			teamBox.put(tname, mList);
+	public Employee addOrUpdateEmployee(Person per) {
+		Optional<Employee> emp = employeeRepository.findById(per.getiNum());
+		if (emp.isPresent()) {
+			// update
+			return emp.get();
+		} else {
+			// insert new
+			return employeeRepository.save(Employee.from(per));
 		}
-		if (!mList.contains(per))
-			mList.add(per);
+
 	}
 
-	public void addDeptBox(final Person per) {
-		if (per.getDept().isEmpty())
-			return;
-		String tname = !per.getDept().isEmpty() ? per.getDept() : "none";
-		List<Person> mList = deptBox.get(tname);
-		if (mList == null) {
-			mList = new ArrayList<Person>();
-			deptBox.put(tname, mList);
-		}
-		mList.add(per);
-	}
+	public void load() {
 
-	public void load() throws IOException {
-		Reader in = new FileReader(FILE);
-
-		log.info("loading");
-
-		Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
-
-		for (CSVRecord rec : records) {
-			Person per = Person.load(rec);
-			if (!per.hasLeft()) {
-				per.setFirstName(trimFirstName(per.getFirstName()));
-				addToPerson(per);
-				addToMgr(per);
-				// addDeptBox(per);
-				// addTeamBox(per);
-				// log.info(per);
+		Map<String, Employee> empMap = new HashMap<String, Employee>();
+		try {
+			log.info("loading");
+			Optional<OrgView> defaultViewOpt = orgViewRepository.findById(CoreDAO.DEFAULT_VIEW);
+			if (!defaultViewOpt.isPresent()) {
+				log.error("no default view found");
+				return;
 			}
-		}
+			OrgView defaultView = defaultViewOpt.get();
 
+			Reader in = new FileReader(EMPL_FILE);
+
+			Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+			log.info("reading employee data...");
+
+			List<Person> perList = new ArrayList<Person>(); // create local store
+
+			for (CSVRecord rec : records) {
+				Person per = Person.load(rec);
+				perList.add(per);
+				Employee emp = addOrUpdateEmployee(per);
+				empMap.put(emp.getInum(), emp);
+			}			
+			
+			// need to create both container and link info
+			// load containers for this view
+			List<OrgContainer> orgContainers = orgContainerRepository.findByViewName(CoreDAO.DEFAULT_VIEW);
+			Map<String,OrgContainer> contMap = orgContainers.stream().collect(Collectors.toMap( OrgContainer::getFQDN, it->it) );
+			
+			for (Person per : perList) {
+				final Employee empTo = empMap.get(per.getMgriNum());
+				final Employee empFrom = empMap.get(per.getiNum());
+				
+				if ((empFrom != null) && (empTo != null))
+					if (!empFrom.getInum().isEmpty() && !empTo.getInum().isEmpty()) {								
+						OrgViewItem saveOrgItem;
+						// find this employee entry for this view (if any)
+						Optional<OrgViewItem> oviOpt = orgViewItemRepository.findByviewNameAndiNum(CoreDAO.DEFAULT_VIEW,per.getiNum());
+						if (!oviOpt.isPresent()) {
+							// create
+							saveOrgItem = orgViewItemRepository.save( new OrgViewItem(CoreDAO.DEFAULT_VIEW,per.getiNum(),"reportsTo",per.getMgriNum()));							
+						}else {
+							saveOrgItem = oviOpt.get();
+							// update
+							saveOrgItem.setLinkiNum( per.getMgriNum() );
+							saveOrgItem = orgViewItemRepository.save( saveOrgItem );
+						}
+					}
+			}
+			
+
+			// for default view
+
+			in = new FileReader(GRP_FILE);
+
+			records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+			log.info("reading group data...");
+			for (CSVRecord rec : records) {
+				GroupCSV grpItem = GroupCSV.load(rec);				
+				OrgContainer oc = contMap.get( grpItem.getFQDN() );
+				if (oc == null) {
+					// category does not exist
+					oc = new OrgContainer(CoreDAO.DEFAULT_VIEW, grpItem.getDept(), grpItem.getGroup(), grpItem.getTeamName());
+					oc = orgContainerRepository.save(oc);
+					contMap.put(oc.getFQDN(),oc);
+					//defaultView = orgViewRepository.save(defaultView);
+				}else {
+					log.info("Found "+grpItem.getFQDN());
+				}
+				// is this emp already in the category?
+				Employee emp = empMap.get(grpItem.getiNum());
+				// check if not already there?
+				if (emp.getInum().equalsIgnoreCase("33843")) {
+					log.info(" look ");
+				}
+								
+				Optional<OrgViewItem> oviOpt = orgViewItemRepository.findByviewNameAndiNum(CoreDAO.DEFAULT_VIEW,grpItem.getiNum());				
+				OrgViewItem saveOrgItem;
+				if (!oviOpt.isPresent()) {					
+					// create
+					saveOrgItem = orgViewItemRepository.save( new OrgViewItem(CoreDAO.DEFAULT_VIEW,grpItem.getiNum(),oc.getId()));							
+				}else {
+					saveOrgItem = oviOpt.get();
+					// update
+					saveOrgItem.setContainerId( oc.getId() );
+					saveOrgItem = orgViewItemRepository.save( saveOrgItem );
+				}
+							
+					log.info("Adding "+emp.getInum());				
+				
+			}
+			orgViewRepository.save(defaultView);			
+			log.info("Finished");
+			// find out container, subbox
+//			if (!contMap.containsKey(per.getDept()+"_"+per.getTeamByOrg())) {
+//				// create the 
+//			}
+
+			// get reporting mgr inum
+
+//			if (!per.hasLeft()) {
+//				per.setFirstName(trimFirstName(per.getFirstName()));
+//				addToPerson(per);
+//				addToMgr(per);
+//				// addDeptBox(per);
+//				// addTeamBox(per);
+//				// log.info(per);
+//			}
+
+		} catch (Exception e) {
+			log.error("Problem", e);
+		}
 	}
 
 	public Person getPerson(String mgrName) {
@@ -147,112 +283,61 @@ public class DataLoaderService {
 		}
 	}
 
-	public void recursePeople(Person per) {
-		
-		
-		// print this person and subords, then recurs subords
-		prn.println(per.getPrintFmt());
-		addTeamBox(per);
-		for (Person p : per.subord) {
-			prn.println(per.getId() + " --- " + p.getPrintFmt());
-		}
-		for (Person p : per.subord) {
-			addTeamBox(p);
-			recursePeople(p);
-		}
-	}
-
-	public void displayTeams() {
-		for (java.util.Map.Entry<String, List<Person>> iter : teamBox.entrySet()) {
-			String teamName = iter.getKey();
-			prn.println("subgraph " + teamName);
-			for (Person p : iter.getValue()) {
-				prn.println(p.getId());
-			}
-			prn.println("end");
-		}
-		log.info("Done");
-	}
-
 	/// if ( !USE_FILT || USE_FILT && (per.getTeamByOrg().equalsIgnoreCase(FILT) ||
 	/// per.getDept().toLowerCase().endsWith(FILT))) {
 
-	public void link() {
-		// connect each person to their manager
-		for (java.util.Map.Entry<String, List<Person>> iter : mgrMap.entrySet()) {
-			// declare all magagers first
-			Person mgr = perMap.get(iter.getKey()); // this is the manager
-			if (mgr == null) {
-				log.error("MGR no exits " + iter.getKey());
-				mgr = getPerson(iter.getKey()); // create one
-				perMap.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), mgr);
-				// System.out.println(mgr.getPrintFmt());
-				// mgrDecl.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), "");
-			}
-		}
-
-		for (java.util.Map.Entry<String, List<Person>> iter : mgrMap.entrySet()) {
-
-			Person mgr = getPerson(iter.getKey());
-	//		if (mgr.getFirstName().toLowerCase().startsWith("deepak")) {
-
-				if (!mgrDecl.containsKey(iter.getKey())) {
-					mgrDecl.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), "");
-					prn.println(mgr.getPrintFmt());
-				}
-				for (Person p : iter.getValue()) {
-					if (!USE_FILT || (USE_FILT && (p.getDept().toLowerCase().endsWith(FILT)
-							|| p.getTeamByOrg().toLowerCase().endsWith(FILT)))) {
-						prn.println(mgr.getId() + " --- " + p.getPrintFmt());
-					}
-				}
-	//		}
-		}
-
-		// now do the dept & team boxes,
-
-		// first do team boxes
-		for (java.util.Map.Entry<String, List<Person>> iter : teamBox.entrySet()) {
-			String teamName = iter.getKey();
-			prn.println("subgraph " + teamName);
-			for (Person p : iter.getValue()) {
-				prn.println(p.getId());
-			}
-			prn.println("end");
-		}
-//		for (java.util.Map.Entry<String, List<Person>> iter : deptBox.entrySet()) {
-//			String deptName = iter.getKey();
-//			System.out.println("subgraph " + deptName);
-//			for (Person p : iter.getValue()) {
-//				System.out.println(p.getId());
+//	public void link() {
+//		// connect each person to their manager
+//		for (java.util.Map.Entry<String, List<Person>> iter : mgrMap.entrySet()) {
+//			// declare all magagers first
+//			Person mgr = perMap.get(iter.getKey()); // this is the manager
+//			if (mgr == null) {
+//				log.error("MGR no exits " + iter.getKey());
+//				mgr = getPerson(iter.getKey()); // create one
+//				perMap.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), mgr);
+//				// System.out.println(mgr.getPrintFmt());
+//				// mgrDecl.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), "");
 //			}
-//			System.out.println("end");
 //		}
-
-	}
-
-	public static void main(String args[]) throws IOException {
-
-//		final String RobAntczak = "23105";
-//		final String Deepak = "31493";
-//		final String IanLeggett = "34976";
 //
-//		Application app = new Application();
-//		app.load();
-//		// link managers?
-//		// app.link();
-//		app.buildOrg();
-//		
-//		// Creates a FileOutputStream
-//		PrintWriter output = new PrintWriter(new FileOutputStream("deepak.txt"), true);
-//		app.setOutput(output);
-//		Person per = app.getPerson(Deepak);
-//		app.recursePeople(per);
-//		app.displayTeams();
-//		// create a big chart
+//		for (java.util.Map.Entry<String, List<Person>> iter : mgrMap.entrySet()) {
 //
-//		// list people by mgr ref --- person details
+//			Person mgr = getPerson(iter.getKey());
+//			// if (mgr.getFirstName().toLowerCase().startsWith("deepak")) {
+//
+//			if (!mgrDecl.containsKey(iter.getKey())) {
+//				mgrDecl.put(USE_ID ? mgr.getiNum() : mgr.getFirstName(), "");
+//				prn.println(mgr.getPrintFmt());
+//			}
+//			for (Person p : iter.getValue()) {
+//				if (!USE_FILT || (USE_FILT && (p.getDept().toLowerCase().endsWith(FILT)
+//						|| p.getTeamByOrg().toLowerCase().endsWith(FILT)))) {
+//					prn.println(mgr.getId() + " --- " + p.getPrintFmt());
+//				}
+//			}
+//			// }
+//		}
+//
+//		// now do the dept & team boxes,
+//
+//		// first do team boxes
+//		for (java.util.Map.Entry<String, List<Person>> iter : teamBox.entrySet()) {
+//			String teamName = iter.getKey();
+//			prn.println("subgraph " + teamName);
+//			for (Person p : iter.getValue()) {
+//				prn.println(p.getId());
+//			}
+//			prn.println("end");
+//		}
+////		for (java.util.Map.Entry<String, List<Person>> iter : deptBox.entrySet()) {
+////			String deptName = iter.getKey();
+////			System.out.println("subgraph " + deptName);
+////			for (Person p : iter.getValue()) {
+////				System.out.println(p.getId());
+////			}
+////			System.out.println("end");
+////		}
+//
+//	}
 
-	}
-	
 }

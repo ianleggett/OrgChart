@@ -34,19 +34,17 @@
 
         <nav class="newNav">        	
         	<div class="logo">
-	            <a class="navbar-brand" href="/"><img src="/resources/images/favicon.png" alt="" class="logoimg">Trade Finance</a>
+	            <a class="navbar-brand" href="/"><img src="/resources/images/favicon.png" alt="" class="logoimg">Org View</a>
 			</div>
             <div class="navMenu flex-container">
             	<div class="menuItem">
-            		<div class="dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">EN</div>
+            		<div class="dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">View</div>
 		             	<ul class="dropdown-menu dropdown-menu-middle">
-						    <li><a class="dropdown-item">VN - Ti&#7871;ng Vi&#7879;t</a></li>
-						    <li><a class="dropdown-item">CN - &#x4E2D;&#x6587; </a></li>						    
+						    <li><a class="dropdown-item">default</a></li>
+						    <li><a class="dropdown-item">domains</a></li>						    
 						</ul>
             		</div>            	
-            	<div class="menuItem" onclick="browseOffers()">Browse</div>
-            	<div class="menuItem">FAQ</div>
-            	<div class="menuItem">Explorer</div>
+            	<div class="menuItem"><a href="containerEdit">Teams</a></div>            	
             	<sec:authorize access="!isAuthenticated()">
             		<a class="menuItem" onclick="showlogin()" >Sign in</a>
             	</sec:authorize>
@@ -74,8 +72,7 @@
 						    <li><a class="dropdown-item"><i class="fas fa-balance-scale"></i> Terms & Conditions</a></li>
 						    <li><a class="dropdown-item"><i class="fas fa-user-secret"></i> Privacy Policy</a></li>
 						</ul>
-            		</div>
-            	<div class="menuItem menuMore">Kovan</div>
+            		</div>            	
             </div>
 		</nav>
            

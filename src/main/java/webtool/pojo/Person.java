@@ -23,7 +23,7 @@ public class Person {
 	String city;
 	String contrType; // contract type
 	
-	String teamByOrg;
+//	String teamByOrg;
 	String descr;
 	
 	String jobCat;
@@ -34,8 +34,8 @@ public class Person {
 	String geoReg;
 	String email;
 	
-	String dept;
-	String teamName;
+//	String dept;
+//	String teamName;
 	String vendor;
 	
 	String mgrName;
@@ -67,14 +67,14 @@ public class Person {
 		per.setJobTitle(rec.get("Job Title").replace("(", "").replace(")",""));	
 		
 		per.setStarted(rec.get("Service Dt"));
-		per.setTeamByOrg(rec.get("Team by org chart (level1)"));
+//		per.setTeamByOrg(rec.get("Team by org chart (level1)"));
 		
 		
 		//per.setMgr(rec.get("Service Dt"));
 		per.setGeoReg(rec.get("Geo Reg"));
 		per.setEmail(rec.get("Email ID"));
-		per.setDept(rec.get("Department (Level 2)"));
-		per.setTeamName(rec.get("Team Name (Level 3)"));
+//		per.setDept(rec.get("Department (Level 2)"));
+//		per.setTeamName(rec.get("Team Name (Level 3)"));
 		per.setVendor(rec.get("Vendor"));
 		per.setMgrName(rec.get("Mgr Name"));
 		per.setMgriNum(rec.get("Mgr ID"));
@@ -96,13 +96,10 @@ public class Person {
 		per.setJobTitle(BLANK);	
 		per.setContrType(BLANK);
 		per.setStarted(BLANK);
-		per.setTeamByOrg(BLANK);
 		
 		//per.setMgr(rec.get("Service Dt"));
 		per.setGeoReg(BLANK);
 		per.setEmail(BLANK);
-		per.setDept(BLANK);
-		per.setTeamName(BLANK);
 		per.setVendor(BLANK);
 		per.setMgrName(BLANK);
 		per.setMgriNum(BLANK);
@@ -204,12 +201,7 @@ public class Person {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	public String getTeamByOrg() {
-		return teamByOrg;
-	}
-	public void setTeamByOrg(String teamByOrg) {
-		this.teamByOrg = teamByOrg;
-	}
+
 	public String getDescr() {
 		return descr;
 	}
@@ -257,18 +249,6 @@ public class Person {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getDept() {
-		return dept;
-	}
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
-	public String getTeamName() {
-		return teamName;
-	}
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
 	public String getVendor() {
 		return vendor;
 	}
@@ -276,15 +256,14 @@ public class Person {
 		this.vendor = vendor;
 	}
 
-
 	@Override
 	public String toString() {
-		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", city=" + city + ", teamByOrg="
-				+ teamByOrg + ", descr=" + descr + ", jobCat=" + jobCat + ", jobTitle=" + jobTitle + ", started="
-				+ started + ", mgr=" + mgr + ", geoReg=" + geoReg + ", email=" + email + ", dept=" + dept
-				+ ", teamName=" + teamName + ", vendor=" + vendor + ", mgrName=" + mgrName + "]";
+		return "Person [id=" + id + ", leaver=" + leaver + ", iNum=" + iNum + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", city=" + city + ", contrType=" + contrType + ", descr=" + descr + ", jobCat=" + jobCat
+				+ ", jobTitle=" + jobTitle + ", started=" + started + ", mgr=" + mgr + ", mgriNum=" + mgriNum
+				+ ", geoReg=" + geoReg + ", email=" + email + ", vendor=" + vendor + ", mgrName=" + mgrName
+				+ ", subord=" + subord + "]";
 	}
-
 
 	
 }

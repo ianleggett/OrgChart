@@ -35,7 +35,7 @@
 			<a class="navbar-brand" href="/"><img src="resources/images/favicon.png" alt="" class="logoimg">Org Charter</a>
 		</div>
 		<div class="navMenu flex-container">     	
-			<div class="menuItem" onclick="action1()">action1</div>		
+			<div class="menuItem"><a class="dropdown-item" href="/logout2"><i class="fas fa-sign-out-alt"></i> containers</a></div>		
 			<div class="menuItem" onclick="action2()">action2</div>			
 			
 			<div class="menuItem">
@@ -57,7 +57,7 @@
 		</div>
 	</nav>
           
-
+<jsp:include page="header.jsp" />
 
 <script type="text/javascript">	
 
@@ -120,22 +120,6 @@
   </div>
   
   <div id="snackbar">Some text some message..</div>
-
-
-	
-				  <!-- footer class="py-4 bg-light mt-auto">
-					  <div class="container-fluid">
-						  <div class="d-flex align-items-center justify-content-between small"> 
-							  <div class="text-muted">(Version <spring:eval expression="@environment.getProperty('website.version')" />) Copyright &copy; Trade Finance tinance.com 2021</div>
-							  <div>
-								  <a href="#">Privacy Policy</a>
-								  &middot;
-								  <a href="#">Terms &amp; Conditions</a>
-							  </div>
-						  </div>
-					  </div>
-				  </footer>
-				  -->
    
   </body>
   </html>
