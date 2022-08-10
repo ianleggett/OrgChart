@@ -7,6 +7,14 @@
 <script type="text/javascript">
 	
 	function initscript() {
+		// populate views menu
+		$.getJSON('viewdata.json', function(vdata) {
+			$('#viewbase').empty();
+			vdata.data.forEach(function(item){
+				$('#viewbase').append('<li><a class="dropdown-item" href="diag?v='+item.name+'">'+item.name+'</a></li>');					
+			});
+			$('#viewbase').append('<li><a class="dropdown-item" href="viewEdit">edit views</a></li>');
+		});	
 		pageStart(); // call others
 	}
 		
@@ -30,21 +38,22 @@
 <title><spring:eval
 		expression="@environment.getProperty('website.title')" /></title>
 
-<body onload="initscript()" class="container">
+<body onload="initscript()" class="zcontainer">
 
         <nav class="newNav">        	
         	<div class="logo">
 	            <a class="navbar-brand" href="/"><img src="/resources/images/favicon.png" alt="" class="logoimg">Org View</a>
-			</div>
+			</div>			
             <div class="navMenu flex-container">
+            <div class="menuItem menuMore">${view}</div>
             	<div class="menuItem">
-            		<div class="dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">View</div>
-		             	<ul class="dropdown-menu dropdown-menu-middle">
-						    <li><a class="dropdown-item">default</a></li>
-						    <li><a class="dropdown-item">domains</a></li>						    
+            		<div class="dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">Views</div>
+		             	<ul id="viewbase" class="dropdown-menu dropdown-menu-middle">						   
+						   <!-- Auto Insert views here-->								    
 						</ul>
-            		</div>            	
-            	<div class="menuItem"><a href="containerEdit">Teams</a></div>            	
+            		</div>              		
+            	<div class="menuItem"><a href="staff">People</a></div>          	
+            	<div class="menuItem"><a href="containerEdit">Grouping</a></div>            	
             	<sec:authorize access="!isAuthenticated()">
             		<a class="menuItem" onclick="showlogin()" >Sign in</a>
             	</sec:authorize>
@@ -67,6 +76,8 @@
 	                		<li><a class="dropdown-item" href="/logout2"><i class="fas fa-sign-out-alt"></i> logout</a></li>
 							</sec:authorize>
 							</sec:authorize>
+							 <li><a class="dropdown-item" href="/uploadstaff"><i class="far fa-question-circle"></i>Import Staff Data</a></li>
+							 <li><a class="dropdown-item" href="/uploadgroup"><i class="far fa-question-circle"></i>Import Team Data</a></li>
 						    <li><a class="dropdown-item"><i class="far fa-question-circle"></i> Support</a></li>
 						    <li><a class="dropdown-item"><i class="fas fa-flask"></i> Request a feature</a></li>
 						    <li><a class="dropdown-item"><i class="fas fa-balance-scale"></i> Terms & Conditions</a></li>

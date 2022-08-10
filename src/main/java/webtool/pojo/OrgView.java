@@ -14,40 +14,12 @@ public class OrgView {
 	String descr;
 	Boolean readOnly;
 	
-//	@OneToMany(targetEntity=OrgContainer.class, fetch=FetchType.EAGER,cascade = CascadeType.ALL)	
-//	List<OrgContainer> containers = new ArrayList<OrgContainer>();
-//	@OneToMany(targetEntity=OrgLink.class, fetch=FetchType.LAZY,cascade = CascadeType.ALL)
-//	List<OrgLink> links = new ArrayList<OrgLink>();
-//	
-//	/******* fast access, not persisted *********/
-//	@Transient
-//	Map<String,OrgLink> linkMap = new HashMap<String,OrgLink>();
-//	/******* fast access, not persisted *********/
-//	@Transient
-//	Map<String,OrgContainer> containerMap = new HashMap<String,OrgContainer>();
-//	
-//	public void add(OrgContainer cont) {
-//		containers.add(cont);
-//		containerMap.put(cont.getFQDN(),cont);
-//	}
-//	public void add(OrgLink link) {
-//		links.add(link);
-//		linkMap.put(link.getIdHash(),link);
-//	}
-//	
-//	public Map<String,OrgLink> getLinkMap(){
-//		if (linkMap==null) {
-//			linkMap = links.stream().collect(Collectors.toMap( OrgLink::getIdHash, it->it) );
-//		}
-//		return linkMap;
-//	}
-//	
-//	public Map<String,OrgContainer> getContainerMap(){
-//		if (containerMap==null) {
-//			containerMap = containers.stream().collect(Collectors.toMap( OrgContainer::getFQDN, it->it) );
-//		}
-//		return containerMap;
-//	}
+	public OrgView(WebViewUpdate wvu) {
+		super();
+		this.name = wvu.name;
+		this.descr = wvu.descr;
+		this.readOnly = wvu.readOnly;
+	}
 	
 	public OrgView() {
 		super();
@@ -58,6 +30,14 @@ public class OrgView {
 		this.descr = descr;
 		this.readOnly = readOnly;
 	}
+	
+	public boolean updateDetails(WebViewUpdate wvu) {		
+	//	this.name = wvu.name; can not change name its the ID
+		this.descr = wvu.descr;
+		this.readOnly = wvu.readOnly;
+		return true;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -76,17 +56,5 @@ public class OrgView {
 	public void setReadOnly(Boolean readOnly) {
 		this.readOnly = readOnly;
 	}
-//	public List<OrgContainer> getContainers() {
-//		return containers;
-//	}
-//	public void setContainers(List<OrgContainer> containers) {
-//		this.containers = containers;
-//	}
-//	public List<OrgLink> getLinks() {
-//		return links;
-//	}
-//	public void setLinks(List<OrgLink> links) {
-//		this.links = links;
-//	}
 	
 }

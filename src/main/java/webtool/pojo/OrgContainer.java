@@ -17,20 +17,21 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "ocontainer",uniqueConstraints = { @UniqueConstraint(columnNames = { "viewName", "deptName", "groupName","teamName"  }) })
+@Table(name = "ocontainer", uniqueConstraints = {
+		@UniqueConstraint(columnNames = { "viewName", "deptName", "groupName", "teamName" }) })
 public class OrgContainer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "c_generator")
-    @SequenceGenerator(name="c_generator", sequenceName = "c_seq",initialValue = 1)
-    @Column(name = "id", updatable = false, nullable = false)   
-    private long id;
-    
-    String viewName;
-    String deptName;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "c_generator")
+	@SequenceGenerator(name = "c_generator", sequenceName = "c_seq", initialValue = 1)
+	@Column(name = "id", updatable = false, nullable = false)
+	private long id;
+
+	String viewName;
+	String deptName;
 	String groupName;
 	String teamName;
-	
+
 //	@OneToMany(targetEntity=Employee.class, fetch=FetchType.EAGER,cascade = CascadeType.ALL)		
 //	List<Employee> ipeople = new ArrayList<Employee>();
 //
@@ -42,8 +43,19 @@ public class OrgContainer {
 //		ipeople.add( emp );
 //		return true;
 //	}
+	public OrgContainer(WebUpdateContainer upd) {
+		super();
+		this.id = upd.getId();
+		this.viewName = upd.getViewName();
+		this.deptName = upd.getDeptName();
+		this.groupName = upd.getGroupName();
+		this.teamName = upd.getTeamName();
+
+	}
+
 	public boolean updateDetails(WebUpdateContainer upd) {
-		if (this.id==upd.getId()) {
+		if (this.id == upd.getId()) {
+			this.viewName = upd.getViewName();
 			this.deptName = upd.getDeptName();
 			this.groupName = upd.getGroupName();
 			this.teamName = upd.getTeamName();
@@ -51,12 +63,13 @@ public class OrgContainer {
 		}
 		return false;
 	}
-	public static String getFQDN(String dept,String group,String team) {
-		return dept+"_"+group+"_"+team; 
+
+	public static String getFQDN(String dept, String group, String team) {
+		return dept + "_" + group + "_" + team;
 	}
-	
+
 	public String getFQDN() {
-		return getFQDN(getDeptName(),getGroupName(),getTeamName());
+		return getFQDN(getDeptName(), getGroupName(), getTeamName());
 	}
 
 	public OrgContainer() {
@@ -110,7 +123,5 @@ public class OrgContainer {
 //	public void setIpeople(List<Employee> ipeople) {
 //		this.ipeople = ipeople;
 //	}
-	
-	
-	
+
 }

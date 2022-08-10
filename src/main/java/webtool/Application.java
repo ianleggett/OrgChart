@@ -28,7 +28,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 //@Import({ SecurityConfiguration.class })
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 //@ImportResource("classpath:application-context.xml")
-@PropertySources({ @PropertySource("classpath:exch-config.properties"),@PropertySource("classpath:sys-config.properties") })
+@PropertySources({ @PropertySource("classpath:sys-config.properties"),@PropertySource("classpath:storage-config.properties") })
 public class Application extends SpringBootServletInitializer {
 	
 	@Override

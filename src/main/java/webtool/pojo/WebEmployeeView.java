@@ -1,5 +1,9 @@
 package webtool.pojo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import webtool.utils.CoreDAO;
 
 /**
  * Represents the table data for an employye / view
@@ -8,6 +12,11 @@ package webtool.pojo;
  */
 public class WebEmployeeView {
 
+	static int CTR = 1000;
+	static final String BLANK = "";
+	static final String LV_LEAVER_STYLE = " fill:#f9f,stroke:#333,stroke-width:px";
+	static final String LV_CONTR_STYLE = " fill:#ffdddd,stroke:#333,stroke-width:px";
+	
 	String inum;// unique index
 	
 	String firstName;
@@ -26,11 +35,81 @@ public class WebEmployeeView {
 	
 	String vendor;	
 
+	// orgviewItem stuff
+	String role;  // this role
+	String linkName;  // link type
+	String linkValue;  // reports to
+	String linkiNum;  // reports to
+	
 	/**** container stuff ****/
 	long cid;
 	String deptName;
 	String groupName;
 	String teamName;
+	
+	public List<WebEmployeeView> subord = new ArrayList<WebEmployeeView>();
+	
+	public String getFQDN() {
+		return this.getDeptName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getTeamName();
+	}
+	
+	public void addSubordinate(WebEmployeeView per) {
+		if (!subord.contains(per))
+			subord.add(per);
+	}
+	
+	public static WebEmployeeView loadAnon(String nameMissing) {
+		WebEmployeeView per = new WebEmployeeView();
+		per.inum = "99"+CTR;
+		CTR++;
+		per.setFirstName(nameMissing);
+		per.setLastName(BLANK);
+		per.setCity(BLANK);
+		per.setDescr(BLANK);
+		per.setJobCat(BLANK);
+		per.setJobTitle(BLANK);	
+		per.setContrType(BLANK);
+		per.setStarted(BLANK);
+		
+		//per.setMgr(rec.get("Service Dt"));
+		per.setGeoReg(BLANK);
+		per.setEmail(BLANK);
+		per.setVendor(BLANK);
+		per.setRole(BLANK);
+		per.setLinkiNum(BLANK);
+		
+		return per;
+	}
+	
+	public boolean isContractor() {
+		return this.contrType.toLowerCase().startsWith("contr");
+	}
+	
+	public boolean isLeaver() {
+		return false;
+		//return this.leaver.toLowerCase().startsWith("y");
+	}
+	
+	public String getDetails() {
+		return getFirstName()+" "+getLastName();
+	}
+	
+	public String getPrintFmt() {
+		
+		String str = getInum()+"(" +getFirstName()+" "+getLastName()+ "<br/>"+ 
+				getJobTitle()+ ")" ;
+		
+		if (isLeaver()) {
+			str += "\nstyle " + getInum() +  LV_LEAVER_STYLE;
+		}else if (isContractor()) {
+			str += "\nstyle " + getInum() +  LV_CONTR_STYLE;
+		}
+
+		return str;
+		
+		//		getDept() + "<br/>" +
+		//		getTeamName() + ")";
+	}
 	
 	public void setEmployee(Employee emp) {
 		this.inum = emp.inum;
@@ -54,6 +133,43 @@ public class WebEmployeeView {
 		this.teamName = oCont.getTeamName();
 	}
 	
+	public void setOrgViewItem(OrgViewItem ovi) {
+		this.role = ovi.getRole();
+		this.linkiNum = ovi.getLinkiNum();
+	}
+	
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
+	public String getLinkValue() {
+		return linkValue;
+	}
+
+	public void setLinkValue(String linkValue) {
+		this.linkValue = linkValue;
+	}
+
+	public String getLinkiNum() {
+		return linkiNum;
+	}
+
+	public void setLinkiNum(String linkiNum) {
+		this.linkiNum = linkiNum;
+	}
+
 	public String getInum() {
 		return inum;
 	}

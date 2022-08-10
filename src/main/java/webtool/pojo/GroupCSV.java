@@ -12,9 +12,9 @@ public class GroupCSV {
 	public static GroupCSV load(CSVRecord rec) {
 		GroupCSV grp = new GroupCSV();		
 		grp.setiNum(rec.get("ID"));
-		grp.setDept(rec.get("dept"));
-		grp.setGroup(rec.get("group"));
-		grp.setTeamName(rec.get("team-name"));			
+		grp.setDept(rec.get("dept").strip().replaceAll("\\s\\s", " "));
+		grp.setGroup(rec.get("group").strip().replaceAll("\\s\\s", " "));
+		grp.setTeamName(rec.get("team-name").strip().replaceAll("\\s\\s", " "));
 		return grp;
 	}
 	

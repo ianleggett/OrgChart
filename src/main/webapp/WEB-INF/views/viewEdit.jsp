@@ -33,7 +33,7 @@ var prefs;
 
 function pageStart(){
 
-	$.getJSON('containerdata.json?v=${view}', function(data) {		
+	$.getJSON('viewdata.json?v=${view}', function(data) {		
 		contData = data;
 		//console.log(JSON.stringify(contData));
 		contData.data.forEach(function(item){
@@ -47,26 +47,21 @@ function range(start, end) {
     return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
 }
 
-function refreshView(){
-	 location.reload();
-}
-
 function populateTable( container ){
 	
-	$('#cid').val(container.id);
-	$('#deptName').val(container.deptName);
-	$('#groupName').val(container.groupName);
-	$('#teamName').val(container.teamName);		
-	
+	$('#cid').val(1);
+	$('#vname').val(container.name);
+	$('#vdescr').val(container.descr);	
 }
 
-function addContainer(){
+function addView(){
 	$('#cid').val(0);
-	$('#editCode').modal('show');
-	
+	$('#vname').val("");
+	$('#vdescr').val("");
+	$('#editCode').modal('show');	
 }
 
-function editContainer(taskid){
+function editView(taskid){
 	console.log(taskid);
 	console.log( JSON.stringify(contMap[ taskid ]));
 	$('#editCode').modal('show');
@@ -75,14 +70,18 @@ function editContainer(taskid){
  
 function doChanges(){
 	
-	var attrib = {cid:'nocheck', viewName: 'nocheck',deptName:'string', groupName:'string', teamName:'string'}		
+	var attrib = {cid:'nocheck',vname:'string', vdescr:'string', readOnly:'boolean'}		
 	var postObject = validateForm(attrib);	
 	
-	const URL_TARGET = postObject.cid == 0 ? 'addContainer.json' : 'updateContainer.json';
+	const URL_TARGET = postObject.cid == 0 ? 'addView.json' : 'updateView.json';
 	
 	postObject.id = postObject.cid;
 	delete postObject.cid;
-	postObject.viewName = '${view}';
+	postObject.name = postObject.vname;
+	delete postObject.vname;
+	postObject.descr = postObject.vdescr;
+	delete postObject.vdescr;
+	
 	
 	console.log(JSON.stringify(postObject));	
 		
@@ -93,10 +92,12 @@ function doChanges(){
 		    data: JSON.stringify(postObject),
 		    contentType: "application/json",
 		    dataType: 'json',
-		    success: function(data) {
-		    	console.log( JSON.stringify(data));		    			    
-		    	if (data.statusCode==0){		   
-		    		refreshView();	    		
+		    success: function(data) {	
+		    	$('#editCode').modal('hide');
+		    	$('#msgdialog').modal('show');
+		    	$('#msgtitle').html('CCY updated');
+		    	if (data.statusCode==0){		    		
+		    		$('#msgdetails').html('Success<button onclick="refreshView()" type="button" class="btn btn-success"><i class="fas fa-check"></i> OK</button>');
 		    	}else{		    		
 		    		$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed '+data.msg+'</button>');		    		
 		    	}	
@@ -119,16 +120,14 @@ function initTable() {
         columns: [  
         	{ "data": null,
        		 	'render': function (dataIn){              
-       		 	 return '<button class="btn btn-outline-dark" onclick="editContainer('+dataIn.id+')"> <span class="fas fa-user-edit" data-toggle="tooltip" title="edit" style="color:grey;font-size:15px"></span></button>';
-                  //return '<span onclick="editCust( \''+JSON.stringify(data)+'\' )" class="fas fa-user-edit" data-toggle="tooltip" title="edit"></span>';
+       		 	 return '<button class="btn btn-outline-dark" onclick="editView('+dataIn.id+')"> <span class="fas fa-user-edit" data-toggle="tooltip" title="edit" style="color:grey;font-size:15px"></span></button>';                  
                 }
         	},        	
-        	{ "data": "deptName" },
-            { "data": "groupName" },
-            { "data": "teamName" },  
-            { "data": "count" },
+        	{ "data": "name" },
+            { "data": "descr" },
+            { "data": "readOnly" }           
         ],
-        order: [[2, 'asc']]
+        order: [[1, 'asc']]
     } );
     
     // Add event listener for opening and closing details
@@ -152,16 +151,15 @@ function initTable() {
 
 <jsp:include page="menu.jsp" />
  
-<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">Dept | Group | Team</td><td><button type="button" class="btn btn-success" onclick="addContainer()">add</button>  </td></tr></table></div>
+<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">Views</td><td><button type="button" class="btn btn-success" onclick="addView()">add</button>  </td></tr></table></div>
 
-<table id="example" class="table table-striped table-bordered" cellspacing="0" width="90%">
+<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th></th>  
-                <th>dept</th> 
-				<th>group</th>                            
-                <th>team</th>
-                <th>count</th>                
+                <th>name</th> 
+				<th>description</th>                            
+                <th>access</th>
             </tr>
         </thead>
        
@@ -181,17 +179,13 @@ function initTable() {
      <div class="modal-body">
      	 <table class="table-striped table-bordered">
      	<tr>		
-			<td align="right"><div class="col">Dept</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="deptName" placeholder="Dept"></div></td>								
+			<td align="right"><div class="col">Name</div></td>
+			<td> <div class="col"><input type="text" class="form-control" id="vname" placeholder="Name"></div></td>								
 		</tr>
 		<tr>		
-			<td align="right"><div class="col">Group</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="groupName" placeholder="Group"></div></td>	
+			<td align="right"><div class="col">Description</div></td>
+			<td> <div class="col"><input type="text" class="form-control" id="vdescr" placeholder="Description"></div></td>	
 		</tr>
-		<tr>		
-			<td align="right"><div class="col">Team</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="teamName" placeholder="Team"></div></td>	
-		</tr>		
 
 		</table>    			
 		
@@ -202,7 +196,7 @@ function initTable() {
   </div>
 </div>
 
-<jsp:include page="components/msg_dialog.jsp" />
+
 
 </body>
 </html>

@@ -36,6 +36,8 @@
 <script src="/resources/js/snackbar.js"></script>
 <script src="/resources/js/datetime/daterangepicker.min.js"></script>
 
+<script src="resources/js/jquery-3.6.0.min.js"></script>
+
 <link
 	href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
 	rel="stylesheet" crossorigin="anonymous" />

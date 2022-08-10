@@ -86,7 +86,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
 	public void addViewControllers(ViewControllerRegistry registry) {
 	    //registry.addViewController("/").setViewName("forward:/react/index.html");
 		//registry.addViewController("/").setViewName("main");
-		registry.addViewController("/").setViewName("staff");
+		registry.addViewController("/").setViewName("home");
 	}
 
 //	@Override

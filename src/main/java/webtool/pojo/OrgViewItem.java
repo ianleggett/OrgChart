@@ -95,6 +95,12 @@ public class OrgViewItem {
 	public void setId(long id) {
 		this.id = id;
 	}
+	@Override
+	public String toString() {
+		return "OrgViewItem [id=" + id + ", viewName=" + viewName + ", iNum=" + iNum + ", containerId=" + containerId
+				+ ", role=" + role + ", linkName=" + linkName + ", linkValue=" + linkValue + ", linkiNum=" + linkiNum
+				+ "]";
+	}
 	
 	
 }
