@@ -29,7 +29,8 @@ public class WebEmployeeView {
 	String jobCat;
 	String jobTitle;
 	String started;
-
+	String leaver;
+	
 	String geoReg;
 	String email;
 	
@@ -86,8 +87,7 @@ public class WebEmployeeView {
 	}
 	
 	public boolean isLeaver() {
-		return false;
-		//return this.leaver.toLowerCase().startsWith("y");
+		return this.leaver.toLowerCase().startsWith("l");
 	}
 	
 	public String getDetails() {
@@ -124,6 +124,7 @@ public class WebEmployeeView {
 		this.geoReg = emp.geoReg;
 		this.email = emp.email;
 		this.vendor = emp.vendor;
+		this.leaver = emp.leaver;
 	}
 	
 	public void setContainer(OrgContainer oCont) {
@@ -266,4 +267,13 @@ public class WebEmployeeView {
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
 	}
+
+	public String getLeaver() {
+		return leaver;
+	}
+
+	public void setLeaver(String leaver) {
+		this.leaver = leaver;
+	}
+	
 }

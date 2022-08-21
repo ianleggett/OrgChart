@@ -73,6 +73,7 @@ public class Person {
 		//per.setMgr(rec.get("Service Dt"));
 		per.setGeoReg(rec.get("Geo Reg"));
 		per.setEmail(rec.get("Email ID"));
+		per.setLeaver(rec.get("Leaver/Active"));
 //		per.setDept(rec.get("Department (Level 2)"));
 //		per.setTeamName(rec.get("Team Name (Level 3)"));
 		per.setVendor(rec.get("Vendor"));

@@ -161,8 +161,8 @@
 	        '<tr>' +
 	        '<td>started:</td>' +
 	        '<td>' +
-	        d.started +
-	        '</td>' +
+	        d.started + '('+ d.leaver +')' +
+ 	        '</td>' +
 	        '</tr>' +
 	        '<tr>' +
 	        '<td>email:</td>' +
@@ -186,7 +186,7 @@
 		return '<a href="#" onclick="showContainerEdit(\''
 		+ row.inum
 		+ '\',\''+row.containerId+'\')" >'														
-		+ data + '</a>';
+		+ '_' + data + '</a>';
 	}
 	
 	function setTable(tabledata) {

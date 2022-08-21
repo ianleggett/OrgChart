@@ -53,11 +53,11 @@ public class DataLoaderService {
 	static final String EMPL_FILE = "/home/ian/Downloads/PDT_PA_Teams_Mapping_Line Managers.csv";
 	static final String GRP_FILE = "/home/ian/Downloads/PDT-default-group.csv";
 	// static final String FILE = "/Users/i34976/Downloads/PDT_test.csv";
-	
-	final List<String> STAFF_HDR = List.of("ID", "First Name", "Last", "City Descr", "Descr", "Contract Type",
+
+	final List<String> STAFF_HDR = List.of("Leaver/Active","ID", "First Name", "Last", "City Descr", "Descr", "Contract Type",
 			"Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name", "Mgr ID");
 	final List<String> GROUP_HDR = List.of("ID", "group", "dept", "team-name");
-	
+
 	boolean inprogress = false;
 	StringBuilder sb = new StringBuilder();
 
@@ -78,29 +78,32 @@ public class DataLoaderService {
 		Runnable thisRun = new Runnable() {
 			@Override
 			public void run() {
-				inprogress = true;
-				sb = new StringBuilder();
-				sb.append("<b>Importing Staff</b><br/>");
-				if (destFile != null) {
-					sb.append("Checking data integrity..");
-					OrgView defView = getDefaultView();
-					if (defView != null) {
-						sb.append("OK<br/>");
-						sb.append(validateCSV(destFile,STAFF_HDR));
-						sb.append("Clearing employee data...");
-						employeeRepository.deleteAll();
-						sb.append("OK<BR/>");
-						sb.append("Reading employee data...");
-						final long prodCount = loadStaff(destFile);
-						sb.append("OK, loaded " + prodCount + " <br/>");
-						sb.append("Complete !! <br/>");
+				try {
+					inprogress = true;
+					sb = new StringBuilder();
+					sb.append("<b>Importing Staff</b><br/>");
+					if (destFile != null) {
+						sb.append("Checking data integrity..");
+						OrgView defView = getDefaultView();
+						if (defView != null) {
+							sb.append("OK<br/>");
+							sb.append(validateCSV(destFile, STAFF_HDR));
+							sb.append("Clearing employee data...");
+							employeeRepository.deleteAll();
+							sb.append("OK<BR/>");
+							sb.append("Reading employee data...");
+							final long prodCount = loadStaff(destFile);
+							sb.append("OK, loaded " + prodCount + " <br/>");
+							sb.append("Complete !! <br/>");
+						} else {
+							sb.append("FAIL<br/>Default view does not exist");
+						}
 					} else {
-						sb.append("FAIL<br/>Default view does not exist");
+						sb.append("FAIL<br/>Problem with uploaded file");
 					}
-				} else {
+				} catch (Exception e) {
 					sb.append("FAIL<br/>Problem with uploaded file");
 				}
-
 				inprogress = false;
 			}
 		};
@@ -126,7 +129,7 @@ public class DataLoaderService {
 					sb.append("Checking data integrity..");
 
 					sb.append("OK<br/>");
-					sb.append(validateCSV(destFile,GROUP_HDR));
+					sb.append(validateCSV(destFile, GROUP_HDR));
 					sb.append("Clearing existing groups...");
 
 					sb.append("OK<BR/>");
@@ -181,7 +184,7 @@ public class DataLoaderService {
 		return defaultViewOpt.get();
 	}
 
-	public String validateCSV(final Path destFile,List<String> hdr) {
+	public String validateCSV(final Path destFile, List<String> hdr) {
 		try {
 
 			Reader in = new FileReader(destFile.toString());
@@ -190,7 +193,7 @@ public class DataLoaderService {
 
 			log.info("Check header data exists....");
 			int count = 0;
-			
+
 			Iterator<CSVRecord> iter = records.iterator();
 
 			CSVRecord firstRec = iter.next();

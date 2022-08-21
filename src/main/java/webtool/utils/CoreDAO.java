@@ -335,7 +335,7 @@ public class CoreDAO {
 		Long dept = containerBox.get(fqdn);
 		if (dept == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getDeptName(),"", "orange", true, Long.getLong(""));
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getDeptName(),"","", "orange", true, Long.getLong(""));
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -345,7 +345,7 @@ public class CoreDAO {
 		Long grp = containerBox.get(fqdn);
 		if (grp == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getGroupName(),"", "green", true, dept);
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getGroupName(),"","", "green", true, dept);
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -355,7 +355,7 @@ public class CoreDAO {
 		Long team = containerBox.get(fqdn);
 		if (team == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getTeamName(),"", "blue", true, grp);
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getTeamName(),"","", "blue", true, grp);
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -369,8 +369,9 @@ public class CoreDAO {
 		// print this person and subords, then recurs subords
 		if (!per.getInum().isBlank()) {
 			long inum = Integer.parseInt(per.getInum());
-			String color = per.isContractor() ? "lightblue" : "lightgreen";
-			ndata.add(new GoJSNodeData(inum, per.getDetails(),per.getJobTitle(), color, false, per.getCid()));
+			String color = per.isLeaver() ? "lightgrey" : per.isContractor() ? "lightblue" : "lightgreen";
+			String title =  per.isContractor() ? per.getVendor() : per.getJobTitle();
+			ndata.add(new GoJSNodeData(inum, per.getDetails(),title, per.getCity(), color, false, per.getCid()));
 
 //			for (WebEmployeeView p : per.subord) {
 //				recursePeople(ndata, p);
