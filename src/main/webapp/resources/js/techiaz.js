@@ -82,9 +82,10 @@ function validateForm(attrib){
 		postObject[field] = widgetval;				
 		switch(attrib[field]){
 			case 'string':				
-				if (widgetval==""){
-					fieldError += 1
-				} break;
+			//	if (widgetval==""){
+			//		fieldError += 1
+			//	} 
+			     break;
 			case 'number':				
     			if (!widgetval.match(regex)){		  	    
 					fieldError += 1

@@ -29,7 +29,7 @@ public class WebEmployeeView {
 	String jobCat;
 	String jobTitle;
 	String started;
-	String leaver;
+	Boolean leaver;
 	
 	String geoReg;
 	String email;
@@ -87,7 +87,7 @@ public class WebEmployeeView {
 	}
 	
 	public boolean isLeaver() {
-		return this.leaver.toLowerCase().startsWith("l");
+		return this.leaver;
 	}
 	
 	public String getDetails() {
@@ -268,12 +268,14 @@ public class WebEmployeeView {
 		this.teamName = teamName;
 	}
 
-	public String getLeaver() {
+	public Boolean getLeaver() {
 		return leaver;
 	}
 
-	public void setLeaver(String leaver) {
+	public void setLeaver(Boolean leaver) {
 		this.leaver = leaver;
 	}
+
+
 	
 }

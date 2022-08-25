@@ -122,28 +122,27 @@ public class CoreDAO {
 		systemStatusService.setWorking(true);
 		systemStatusService.setNewMessage("System OK");
 		dataloaderService.initDefaultView();
-		//dataloaderService.load();
+		// dataloaderService.load();
 
 	}
 
 	public DataLoaderService getDataService() {
 		return dataloaderService;
-	}	
-	
+	}
+
 	public AggContList getAggContainerData(String viewName) {
-				
+
 		AggContList agg = new AggContList();
 		List<OrgContainer> orgContainers = orgContainerRepository.findByViewNameSorted(viewName);
-		for(OrgContainer oc : orgContainers) {
-			if ((oc.getDeptName()!=null)&&(oc.getGroupName()!=null)&&(oc.getTeamName()!=null)){
+		for (OrgContainer oc : orgContainers) {
+			if ((oc.getDeptName() != null) && (oc.getGroupName() != null) && (oc.getTeamName() != null)) {
 				agg.addContainer(oc.getDeptName(), oc.getGroupName(), oc.getTeamName());
 			}
 		}
 		return agg;
 	}
-	
-	
-	public List<WebEmployeeView> getViewData(String viewName) {
+
+	public List<WebEmployeeView> getViewData(String viewName, boolean showLeavers) {
 
 		List<WebEmployeeView> result = new ArrayList<WebEmployeeView>();
 		List<Employee> emps = ImmutableList.copyOf(employeeRepositiory.findAll());
@@ -155,74 +154,76 @@ public class CoreDAO {
 
 		List<OrgViewItem> ovOpt = orgViewItemRepository.findByViewName(viewName);
 		Map<String, Employee> missing = emps.stream().collect(Collectors.toMap(Employee::getInum, it -> it));
-		OrgContainer ORPH_CONT = new OrgContainer(viewName,"not-set","not-set","not-set");
-				
+		OrgContainer ORPH_CONT = new OrgContainer(viewName, "not-set", "not-set", "not-set");
+
 		for (OrgViewItem ovi : ovOpt) {
 			Employee emp = empMap.get(ovi.getiNum());
 			if (emp != null) {
-				missing.remove( ovi.getiNum() );
-				final WebEmployeeView wev = new WebEmployeeView();
-				wev.setEmployee(emp);
-				OrgContainer oc = contMap.get(ovi.getContainerId());
-				if (oc != null) {					
-					wev.setContainer(oc);
-					wev.setOrgViewItem(ovi);
-					result.add(wev);
-				}else {
-					log.error("Container does not exist "+ovi);
-				}				
-			}else {
-				log.error("empl does not exist "+ovi);
-			}			
+				missing.remove(ovi.getiNum());
+				if (!emp.getLeaver() || (showLeavers && emp.getLeaver())) {
+
+					final WebEmployeeView wev = new WebEmployeeView();
+					wev.setEmployee(emp);
+					OrgContainer oc = contMap.get(ovi.getContainerId());
+					if (oc != null) {
+						wev.setContainer(oc);
+						wev.setOrgViewItem(ovi);
+						result.add(wev);
+					} else {
+						log.error("Container does not exist " + ovi);
+					}
+				}
+			} else {
+				log.error("empl does not exist " + ovi);
+			}
 		}
-		
+
 		// generate orphan container
-		for(Entry<String,Employee> iter : missing.entrySet()) {			
+		for (Entry<String, Employee> iter : missing.entrySet()) {
 			final WebEmployeeView wev = new WebEmployeeView();
 			OrgViewItem ovi = new OrgViewItem(viewName, iter.getValue().getInum(), ORPH_CONT.getId());
-			wev.setEmployee(iter.getValue());			
+			wev.setEmployee(iter.getValue());
 			wev.setOrgViewItem(ovi);
 			wev.setContainer(ORPH_CONT);
 			result.add(wev);
 		}
-		
-		
+
 		return result;
 	}
 
 	public RespStatus updateStaffContainer(WebEmployeeView empView) {
 		final String viewName = empView.getDescr();
-       // 1. find container id
-		Optional<OrgContainer> orgContOpt = orgContainerRepository.findByAll(viewName,empView.getDeptName(),empView.getGroupName(),empView.getTeamName());
+		// 1. find container id
+		Optional<OrgContainer> orgContOpt = orgContainerRepository.findByAll(viewName, empView.getDeptName(),
+				empView.getGroupName(), empView.getTeamName());
 		if (orgContOpt.isPresent()) {
-			
-			// get existing container assignment			
+
+			// get existing container assignment
 			Optional<OrgViewItem> ovItemOpt = orgViewItemRepository.findByviewNameAndiNum(viewName, empView.getInum());
 			final OrgViewItem ovItem;
 			if (ovItemOpt.isPresent()) {
 				// create one
 				ovItem = ovItemOpt.get();
 				ovItem.setContainerId(orgContOpt.get().getId());
-			}else {
-				ovItem = new OrgViewItem(viewName,empView.getInum(),orgContOpt.get().getId()); 
+			} else {
+				ovItem = new OrgViewItem(viewName, empView.getInum(), orgContOpt.get().getId());
 			}
-			// update it			
+			// update it
 			// save it
 			orgViewItemRepository.save(ovItem);
 			return RespStatus.OK;
 		}
-		
+
 		return new RespStatus(987, "container not found");
-		
+
 	}
-	
+
 	public List<WebViewUpdate> getViews() {
-		List<WebViewUpdate> emps = ImmutableList.copyOf(orgViewRepository
-				.findAll()).stream().map(orgView -> new WebViewUpdate(orgView))
-				.collect(Collectors.toList());
+		List<WebViewUpdate> emps = ImmutableList.copyOf(orgViewRepository.findAll()).stream()
+				.map(orgView -> new WebViewUpdate(orgView)).collect(Collectors.toList());
 		return emps;
 	}
-	
+
 	public List<WebUpdateContainer> getContainers(String viewName) {
 		List<WebUpdateContainer> emps = orgContainerRepository
 				.findByViewNameSorted(viewName).stream().map(orgCont -> new WebUpdateContainer(orgCont.getId(),
@@ -233,7 +234,7 @@ public class CoreDAO {
 	}
 
 	public RespStatus addContainer(WebUpdateContainer upd) {
-		//upd.setViewName(CoreDAO.DEFAULT_VIEW);
+		// upd.setViewName(CoreDAO.DEFAULT_VIEW);
 		// should have id = 0
 		// see if it already exists
 		Optional<OrgContainer> orgContOpt = orgContainerRepository.findByAll(upd.getViewName(), upd.getDeptName(),
@@ -256,8 +257,8 @@ public class CoreDAO {
 		}
 		return new RespStatus(987, "container id not found");
 	}
-	
-	public RespStatus addView(WebViewUpdate upd) {		
+
+	public RespStatus addView(WebViewUpdate upd) {
 		// should have id = 0
 		// see if it already exists
 		Optional<OrgView> orgContOpt = orgViewRepository.findById(upd.getName());
@@ -335,7 +336,7 @@ public class CoreDAO {
 		Long dept = containerBox.get(fqdn);
 		if (dept == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getDeptName(),"","", "orange", true, Long.getLong(""));
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getDeptName(), "", "", "orange", true, Long.getLong(""));
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -345,7 +346,7 @@ public class CoreDAO {
 		Long grp = containerBox.get(fqdn);
 		if (grp == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getGroupName(),"","", "green", true, dept);
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getGroupName(), "", "", "green", true, dept);
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -355,7 +356,7 @@ public class CoreDAO {
 		Long team = containerBox.get(fqdn);
 		if (team == null) {
 			// create and add container
-			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getTeamName(),"","", "blue", true, grp);
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getTeamName(), "", "", "blue", true, grp);
 			goData.getNodedata().add(gsn);
 			containerBox.put(fqdn, gsn.getKey());
 			// s group
@@ -370,8 +371,8 @@ public class CoreDAO {
 		if (!per.getInum().isBlank()) {
 			long inum = Integer.parseInt(per.getInum());
 			String color = per.isLeaver() ? "lightgrey" : per.isContractor() ? "lightblue" : "lightgreen";
-			String title =  per.isContractor() ? per.getVendor() : per.getJobTitle();
-			ndata.add(new GoJSNodeData(inum, per.getDetails(),title, per.getCity(), color, false, per.getCid()));
+			String title = per.isContractor() ? per.getVendor() : per.getJobTitle();
+			ndata.add(new GoJSNodeData(inum, per.getDetails(), title, per.getCity(), color, false, per.getCid()));
 
 //			for (WebEmployeeView p : per.subord) {
 //				recursePeople(ndata, p);
@@ -416,8 +417,8 @@ public class CoreDAO {
 		return mgr;
 	}
 
-	public void loadMaps(GoJSData gojsdata,final String view) {
-		List<WebEmployeeView> webview = getViewData(view);
+	public void loadMaps(GoJSData gojsdata, final String view,boolean showLeavers) {
+		List<WebEmployeeView> webview = getViewData(view,showLeavers);
 		for (WebEmployeeView emp : webview) {
 
 			// if ( (!USE_FILT) || (USE_FILT && !emp.getDeptName().trim().isEmpty() ) ) {
@@ -429,7 +430,7 @@ public class CoreDAO {
 		}
 	}
 
-	public GoJSData genModelGoJS(String view,boolean links) {
+	public GoJSData genModelGoJS(String view, boolean links,boolean leavers) {
 
 		INT_CTR = 10000;
 		mgrMap = new HashMap<String, List<WebEmployeeView>>();
@@ -437,7 +438,7 @@ public class CoreDAO {
 		containerBox = new HashMap<String, Long>();
 
 		GoJSData gojs = new GoJSData();
-		loadMaps(gojs,view);
+		loadMaps(gojs, view,leavers);
 		buildOrg(); // populate subords
 
 		if (links) {
@@ -480,17 +481,17 @@ public class CoreDAO {
 	}
 
 	public void link(List<GoJSLinkData> linkData) {
-		
+
 		for (WebEmployeeView per : perMap.values()) {
 			// for each emp, get sub ord and link to this
 			if (!per.getInum().isBlank()) {
 				long bossNum = Integer.parseInt(per.getInum());
-				for(WebEmployeeView subo : per.subord) {
+				for (WebEmployeeView subo : per.subord) {
 					long subNum = Integer.parseInt(subo.getInum());
 					linkData.add(new GoJSLinkData(subNum, bossNum, "black"));
 				}
 			}
-			
+
 		}
 
 	}

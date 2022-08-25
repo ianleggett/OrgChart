@@ -205,8 +205,9 @@ public class PublicController {
 	@RequestMapping(value = "/orgdata_gojs.json", method = RequestMethod.GET)
 	@ResponseBody
 	public GoJSData getGoJSData(@RequestParam(name = "v",required = true) String viewName) {
-		
-		return coreDAO.genModelGoJS(viewName,false);	
+		final boolean links = false;
+		final boolean leavers = false;
+		return coreDAO.genModelGoJS(viewName,links,leavers);	
 	}
 	
 	@RequestMapping(value = "/containerdata.json", method = RequestMethod.GET)
@@ -231,7 +232,8 @@ public class PublicController {
 	@RequestMapping(value = "/staffdata.json", method = RequestMethod.GET)
 	@ResponseBody
 	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName) {
-		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName));
+		final boolean leavers = false;
+		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,leavers));
 	}
 
 	@RequestMapping(value = "/updateStaff.json", method = RequestMethod.POST, consumes = {

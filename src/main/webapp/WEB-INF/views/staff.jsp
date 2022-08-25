@@ -115,6 +115,8 @@
 			    	$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed - system is down please contact support desk</button>');
 			    },
 			});		
+	    }else{
+	    	console.log('Erros found, not posting..')
 	    }	
 	}
 	
@@ -186,7 +188,7 @@
 		return '<a href="#" onclick="showContainerEdit(\''
 		+ row.inum
 		+ '\',\''+row.containerId+'\')" >'														
-		+ '_' + data + '</a>';
+		+ '<i class="far fa-edit"></i></a> ' + data;
 	}
 	
 	function setTable(tabledata) {
@@ -224,11 +226,9 @@
 										data : "deptName",
 										render : deptTeamRender
 									}, {
-										data : "groupName",
-										render : deptTeamRender
+										data : "groupName"
 									}, {
-										data : "teamName",
-										render : deptTeamRender
+										data : "teamName"
 									}, {
 										data : "city"
 									}, {
@@ -237,7 +237,10 @@
 										data : "jobTitle"
 									}, {
 										data : "geoReg"
-									} 
+									},
+									{
+										data : "vendor"
+									}
 									],
 							"order" : [ [ 3, 'asc' ] ]
 						});
@@ -283,6 +286,7 @@
 			<th>jobCat</th>
 			<th>jobTitle</th>			
 			<th>geoReg</th>			
+			<th>Vendor</th>	
 		</tr>
 	</thead>
 </table>

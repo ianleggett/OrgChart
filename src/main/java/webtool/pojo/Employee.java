@@ -16,7 +16,7 @@ public class Employee {
 	String city;
 	String contrType; // contract type
 
-	String leaver;
+	Boolean leaver;
 
 	String descr;
 
@@ -31,15 +31,16 @@ public class Employee {
 
 	public static Employee from(Person per) {
 		return new Employee(per.iNum, per.firstName, per.lastName, per.city, per.contrType, per.descr, per.jobCat,
-				per.jobTitle, per.started, per.geoReg, per.email, per.vendor, per.leaver);
+				per.jobTitle, per.started, per.geoReg, per.email, per.vendor, per.isLeaver());
 	}
+	
 
 	public Employee() {
 		super();
 	}
 
 	public Employee(String inum, String firstName, String lastName, String city, String contrType, String descr,
-			String jobCat, String jobTitle, String started, String geoReg, String email, String vendor, String leaver) {
+			String jobCat, String jobTitle, String started, String geoReg, String email, String vendor, Boolean leaver) {
 		super();
 		this.inum = inum;
 		this.firstName = firstName;
@@ -152,12 +153,14 @@ public class Employee {
 		this.vendor = vendor;
 	}
 
-	public String getLeaver() {
+	public Boolean getLeaver() {
 		return leaver;
 	}
 
-	public void setLeaver(String leaver) {
+	public void setLeaver(Boolean leaver) {
 		this.leaver = leaver;
 	}
+
+
 
 }
