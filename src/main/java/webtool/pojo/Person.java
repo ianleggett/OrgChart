@@ -131,7 +131,7 @@ public class Person {
 	}
 	
 	public boolean isLeaver() {
-		return this.leaver.toLowerCase().startsWith("y");
+		return this.leaver.toLowerCase().startsWith("l") || this.leaver.toLowerCase().startsWith("y");
 	}
 	
 	public String getMgriNum() {

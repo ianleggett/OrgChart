@@ -57,6 +57,7 @@ public class DataLoaderService {
 	final List<String> STAFF_HDR = List.of("Leaver/Active","ID", "First Name", "Last", "City Descr", "Descr", "Contract Type",
 			"Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name", "Mgr ID");
 	final List<String> GROUP_HDR = List.of("ID", "group", "dept", "team-name");
+	//Team by org chart (level1) ,Department (Level 2), Team Name (Level 3)
 
 	boolean inprogress = false;
 	StringBuilder sb = new StringBuilder();

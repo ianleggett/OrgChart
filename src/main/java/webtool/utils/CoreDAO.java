@@ -142,7 +142,7 @@ public class CoreDAO {
 		return agg;
 	}
 
-	public List<WebEmployeeView> getViewData(String viewName, boolean showLeavers) {
+	public List<WebEmployeeView> getViewData(String viewName,String dept, boolean showLeavers) {
 
 		List<WebEmployeeView> result = new ArrayList<WebEmployeeView>();
 		List<Employee> emps = ImmutableList.copyOf(employeeRepositiory.findAll());
@@ -164,11 +164,13 @@ public class CoreDAO {
 
 					final WebEmployeeView wev = new WebEmployeeView();
 					wev.setEmployee(emp);
-					OrgContainer oc = contMap.get(ovi.getContainerId());
+					OrgContainer oc = contMap.get(ovi.getContainerId());					
 					if (oc != null) {
-						wev.setContainer(oc);
-						wev.setOrgViewItem(ovi);
-						result.add(wev);
+						if ( (dept==null) || ((dept!=null) && oc.getDeptName().equalsIgnoreCase(dept)) ){
+							wev.setContainer(oc);
+							wev.setOrgViewItem(ovi);
+							result.add(wev);
+						}
 					} else {
 						log.error("Container does not exist " + ovi);
 					}
@@ -417,8 +419,8 @@ public class CoreDAO {
 		return mgr;
 	}
 
-	public void loadMaps(GoJSData gojsdata, final String view,boolean showLeavers) {
-		List<WebEmployeeView> webview = getViewData(view,showLeavers);
+	public void loadMaps(GoJSData gojsdata, final String view, final String dept, boolean showLeavers) {
+		List<WebEmployeeView> webview = getViewData(view,dept,showLeavers);
 		for (WebEmployeeView emp : webview) {
 
 			// if ( (!USE_FILT) || (USE_FILT && !emp.getDeptName().trim().isEmpty() ) ) {
@@ -430,7 +432,7 @@ public class CoreDAO {
 		}
 	}
 
-	public GoJSData genModelGoJS(String view, boolean links,boolean leavers) {
+	public GoJSData genModelGoJS(String view,String dept, boolean links,boolean leavers) {
 
 		INT_CTR = 10000;
 		mgrMap = new HashMap<String, List<WebEmployeeView>>();
@@ -438,7 +440,7 @@ public class CoreDAO {
 		containerBox = new HashMap<String, Long>();
 
 		GoJSData gojs = new GoJSData();
-		loadMaps(gojs, view,leavers);
+		loadMaps(gojs, view, dept, leavers);
 		buildOrg(); // populate subords
 
 		if (links) {

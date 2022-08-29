@@ -175,9 +175,11 @@ public class PublicController {
 	}
 	
 	@RequestMapping(value = "/diag")
-	public ModelAndView diag( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {		
+	public ModelAndView diag( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName,
+			@RequestParam(value = "d", required = false) String dept) {		
 		ModelAndView mv = new ModelAndView("diag");		
 		mv.addObject("view", sessionView(request,viewName) );
+		mv.addObject("dept", dept );
 		return mv;
 	}
 	
@@ -204,10 +206,12 @@ public class PublicController {
 	
 	@RequestMapping(value = "/orgdata_gojs.json", method = RequestMethod.GET)
 	@ResponseBody
-	public GoJSData getGoJSData(@RequestParam(name = "v",required = true) String viewName) {
-		final boolean links = false;
+	public GoJSData getGoJSData(@RequestParam(name = "v",required = true) String viewName, 
+								@RequestParam(name = "d",required = false) String dept,
+								@RequestParam(name = "l",required = false) String linksStr) {
+		final boolean links = linksStr!=null ? true : false;
 		final boolean leavers = false;
-		return coreDAO.genModelGoJS(viewName,links,leavers);	
+		return coreDAO.genModelGoJS(viewName,dept, links,leavers);	
 	}
 	
 	@RequestMapping(value = "/containerdata.json", method = RequestMethod.GET)
@@ -231,9 +235,9 @@ public class PublicController {
 
 	@RequestMapping(value = "/staffdata.json", method = RequestMethod.GET)
 	@ResponseBody
-	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName) {
+	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName, @RequestParam(name = "d",required = false) String dept) {
 		final boolean leavers = false;
-		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,leavers));
+		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,dept,leavers));
 	}
 
 	@RequestMapping(value = "/updateStaff.json", method = RequestMethod.POST, consumes = {

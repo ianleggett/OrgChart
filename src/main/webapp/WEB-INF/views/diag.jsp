@@ -9,18 +9,57 @@
 <jsp:include page="menu.jsp" />
 
 <script type="text/javascript">
+    const OPTION_ALL = '= all ='; 
 	var csrfname = "${_csrf.parameterName}";
 	var csrfvalue = "${_csrf.token}";
-
-	function pageStart() {	
-		console.log('viewname = ${view}');
-		$.getJSON('orgdata_gojs.json?v=${view}', function(dataIn){
-			//console.log(JSON.stringify(dataIn));
-			test();
+	var contData;
+	
+	function getData(dep){
+		console.log(dep)
+		depParam = (dep===OPTION_ALL) ? '' : '&d='+dep;
+		console.log(depParam)
+		$.getJSON('orgdata_gojs.json?v=${view}'+depParam, function(dataIn){
+			//console.log(JSON.stringify(dataIn));			
 	      	myDiagram.model = new go.GraphLinksModel(dataIn.nodedata, dataIn.linkdata);
 		}); 
 	}
-
+	
+	function pageStart() {	
+		console.log('viewname = ${view}');
+		
+		$.getJSON('containerAggData.json?v=${view}', function(data) {								
+			contData = data.strMapList;
+			setUpJobs();
+		});
+		
+		test();
+		
+		getData("${dept}");
+		
+	}
+	
+	function setContainerItems(grplst,targetcombo){
+		var tcombo = "#"+targetcombo;		
+		$( tcombo ).empty();
+		$( "<option>" ).html(OPTION_ALL).appendTo( tcombo );	
+		$.each( grplst, function( i, item ) {
+			selected = (item=="${dept}") ? 'selected' : '';
+			$(tcombo).append('<option '+selected+'>'+item+'</option>');
+		 });		
+	}
+     function setUpJobs(){		
+		
+		setContainerItems(Object.keys(contData),"deptName");	
+		
+		$('#deptName').change(function(e) {			
+		    var val = $('#deptName').val();			   
+			// redraw the group
+			getData(val)
+		});
+		
+	}
+	
+	
 	function test(){
 		   // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
 	      // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -276,6 +315,12 @@
 	}
 		
 </script>
+	<table align="center"><tr>
+	
+	<td>
+	<select id="deptName" class="autocomplete">
+  			</select>
+  	</td></tr></table>
 
    <div id="myDiagramDiv"
      style="width:90vw; margin: auto; height: 80vh; background-color: #DAE4E4;"></div>

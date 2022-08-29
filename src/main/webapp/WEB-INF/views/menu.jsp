@@ -33,6 +33,10 @@
         targetElement = targetElement.parentNode;
     } while (targetElement);   
 });
+	
+	function viewButton(viewName){
+		window.location.href="diag?v="+viewName
+	}
 </script>
 
 <title><spring:eval
@@ -45,7 +49,9 @@
 	            <a class="navbar-brand" href="/"><img src="/resources/images/favicon.png" alt="" class="logoimg">Org View</a>
 			</div>			
             <div class="navMenu flex-container">
-            <div class="menuItem menuMore">${view}</div>
+            <div class="menuItem"> <button type="button" onclick="viewButton('${view}')" class="btn btn-sm btn-info btn-rounded">${view}                        
+                      </button>
+                       </div>
             	<div class="menuItem">
             		<div class="dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">Views</div>
 		             	<ul id="viewbase" class="dropdown-menu dropdown-menu-middle">						   

@@ -188,7 +188,7 @@
 		return '<a href="#" onclick="showContainerEdit(\''
 		+ row.inum
 		+ '\',\''+row.containerId+'\')" >'														
-		+ '<i class="far fa-edit"></i></a> ' + data;
+		+ '<i class="far fa-edit"></i></a> <a href="diag?v=${view}&d='+data+'">' + data + '</a>';
 	}
 	
 	function setTable(tabledata) {
@@ -253,7 +253,7 @@
 	        if (row.child.isShown()) {
 	            // This row is already open - close it
 	            row.child.hide();
-	            tr.removeClass('shown');
+	            tr.removeClass('shown'); 
 	        } else {
 	            // Open this row
 	            row.child(format(row.data())).show();
