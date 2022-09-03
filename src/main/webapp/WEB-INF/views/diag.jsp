@@ -19,15 +19,17 @@
 		depParam = (dep===OPTION_ALL) ? '' : '&d='+dep;
 		console.log(depParam)
 		$.getJSON('orgdata_gojs.json?v=${view}'+depParam, function(dataIn){
-			//console.log(JSON.stringify(dataIn));			
+						
 	      	myDiagram.model = new go.GraphLinksModel(dataIn.nodedata, dataIn.linkdata);
+	      	// call to persist session data for next visit
+	      	
 		}); 
 	}
 	
 	function pageStart() {	
 		console.log('viewname = ${view}');
 		
-		$.getJSON('containerAggData.json?v=${view}', function(data) {								
+		$.getJSON('containerAggData.json?v=${view}&viewType=ViewByTeam', function(data) {								
 			contData = data.strMapList;
 			setUpJobs();
 		});

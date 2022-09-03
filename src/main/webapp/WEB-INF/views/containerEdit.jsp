@@ -33,6 +33,15 @@ var prefs;
 
 function pageStart(){
 
+	initView();
+}
+
+function range(start, end) {
+    return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
+}
+
+function initView(){
+	// location.reload();
 	$.getJSON('containerdata.json?v=${view}', function(data) {		
 		contData = data;
 		//console.log(JSON.stringify(contData));
@@ -43,12 +52,22 @@ function pageStart(){
 	});	
 }
 
-function range(start, end) {
-    return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
+function refreshView(){
+	$('#editCode').modal('hide');
+	// location.reload();
+	$.getJSON('containerdata.json?v=${view}', function(data) {		
+		contData = data;
+		//console.log(JSON.stringify(contData));
+		contData.data.forEach(function(item){
+			contMap[item.id] = item;			
+		});
+		table.clear();
+		table.rows.add(contData.data).draw();
+	});	
 }
 
-function refreshView(){
-	 location.reload();
+function hide(){
+	$('#editCode').modal('hide');
 }
 
 function populateTable( container ){
@@ -62,6 +81,9 @@ function populateTable( container ){
 
 function addContainer(){
 	$('#cid').val(0);
+	$('#deptName').val('');
+	$('#groupName').val('');
+	$('#teamName').val('');		
 	$('#editCode').modal('show');
 	
 }
@@ -110,10 +132,16 @@ function doChanges(){
 	  
 }
  
+ 
+function deptTeamRender(data, type, row, meta){
+	//console.log(JSON.stringify(row.inum));
+	return '<a href="diag?v=${view}&d='+data+'">' + data + '</a>';
+}
+
 function initTable() {
 	
     table = $('#example').DataTable( {
-        data : contData.data,
+        data : contData.data,          
         scrollCollapse : false,
         paging 		   : false,
         columns: [  
@@ -123,12 +151,15 @@ function initTable() {
                   //return '<span onclick="editCust( \''+JSON.stringify(data)+'\' )" class="fas fa-user-edit" data-toggle="tooltip" title="edit"></span>';
                 }
         	},        	
-        	{ "data": "deptName" },
+        	{
+				data : "teamName",
+				render : deptTeamRender
+			},
             { "data": "groupName" },
-            { "data": "teamName" },  
+            { "data": "deptName" },  
             { "data": "count" },
         ],
-        order: [[2, 'asc']]
+        order: [[1, 'asc']]
     } );
     
     // Add event listener for opening and closing details
@@ -158,44 +189,41 @@ function initTable() {
         <thead>
             <tr>
                 <th></th>  
-                <th>dept</th> 
-				<th>group</th>                            
-                <th>team</th>
+                <th>Team</th> 
+				<th>Group</th>                            
+                <th>Dept</th>
                 <th>count</th>                
             </tr>
         </thead>
        
     </table>
 
-<div id="editCode" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+<div id="editCode" class="modal fade bd-example-modal-lg" role="dialog">
+  <div class="modal-dialog modal-lg">
 <form action="updateContainer" method="POST">
     <!-- Modal content-->
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
     <input type="hidden" id='cid' name="cid" value="not-set" /> 
     <div class="modal-content">
       <div class="modal-header">      
-        <button type="button" class="btn btn-danger" data-dismiss="modal">&times; Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="hide()" data-dismiss="modal">&times; Cancel</button>
         <button type="button" class="btn btn-success" onclick="doChanges()">Update</button>         
       </div>
      <div class="modal-body">
      	 <table class="table-striped table-bordered">
      	<tr>		
-			<td align="right"><div class="col">Dept</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="deptName" placeholder="Dept"></div></td>								
+			<td align="right"><div class="col">Team</div></td>
+			<td> <div class="col"><input type="text" class="form-control" id="teamName" placeholder="team name"></div></td>								
 		</tr>
 		<tr>		
 			<td align="right"><div class="col">Group</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="groupName" placeholder="Group"></div></td>	
+			<td> <div class="col"><input type="text" class="form-control" id="groupName" placeholder="group name"></div></td>	
 		</tr>
 		<tr>		
-			<td align="right"><div class="col">Team</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="teamName" placeholder="Team"></div></td>	
+			<td align="right"><div class="col">Dept</div></td>
+			<td> <div class="col"><input type="text" class="form-control" id="deptName" placeholder="dept name"></div></td>	
 		</tr>		
-
-		</table>    			
-		
-        <table id="statustable"></table>
+		</table>    			        
       </div>     
     </div>
 </form>

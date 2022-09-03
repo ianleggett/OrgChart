@@ -38,6 +38,7 @@ import webtool.pojo.OrgViewItem;
 import webtool.pojo.Person;
 import webtool.pojo.ProcStatus;
 import webtool.pojo.RespStatus;
+import webtool.pojo.ViewByType;
 import webtool.pojo.WebEmployeeView;
 import webtool.pojo.WebUpdateContainer;
 import webtool.pojo.WebViewUpdate;
@@ -58,7 +59,10 @@ public class CoreDAO {
 	public static final String FIELD_DELIM = "|";
 	public static final String CRLF = "\\r\\n";
 	public static final String DEFAULT_VIEW = "default";
+	public static final String DEFAULT_DEPT = "= all =";
 	public static final String WILDCARD = "%";
+	public static final String MULTI_DELIMITER = "/";
+	
 	static Logger log = Logger.getLogger(CoreDAO.class);
 	static public int RATING_NOT_SET = -1;
 
@@ -130,19 +134,39 @@ public class CoreDAO {
 		return dataloaderService;
 	}
 
-	public AggContList getAggContainerData(String viewName) {
+	public AggContList getAggContainerData(String viewName, ViewByType vType) {
 
 		AggContList agg = new AggContList();
-		List<OrgContainer> orgContainers = orgContainerRepository.findByViewNameSorted(viewName);
+		List<OrgContainer> orgContainers = orgContainerRepository.findByViewDeptSorted(viewName);
 		for (OrgContainer oc : orgContainers) {
 			if ((oc.getDeptName() != null) && (oc.getGroupName() != null) && (oc.getTeamName() != null)) {
-				agg.addContainer(oc.getDeptName(), oc.getGroupName(), oc.getTeamName());
+				if (vType == ViewByType.ViewByTeam)
+					agg.addContainer(oc.getTeamName(), oc.getGroupName(), oc.getDeptName());
+				else
+					agg.addContainer(oc.getDeptName(), oc.getGroupName(), oc.getTeamName());
 			}
 		}
 		return agg;
 	}
 
-	public List<WebEmployeeView> getViewData(String viewName,String dept, boolean showLeavers) {
+	/**
+	 * Match string with delimter
+	 *  str = 'valuations' filt = 'valuations/another team' == match
+	 * @param str
+	 * @param filt
+	 * @return
+	 */
+	private boolean matchByStringSliced(String teamDept,String matchStr) {
+		if (teamDept==null) return true;
+		if (teamDept.equalsIgnoreCase(matchStr) ) return true;
+		String args[] = matchStr.split(CoreDAO.MULTI_DELIMITER);
+		for(String ag : args) {
+			if ( teamDept.equalsIgnoreCase(ag) ) return true;
+		}
+		return false;
+	}
+	
+	public List<WebEmployeeView> getViewData(String viewName, String teamOrdept, boolean showLeavers, ViewByType vType) {
 
 		List<WebEmployeeView> result = new ArrayList<WebEmployeeView>();
 		List<Employee> emps = ImmutableList.copyOf(employeeRepositiory.findAll());
@@ -164,13 +188,16 @@ public class CoreDAO {
 
 					final WebEmployeeView wev = new WebEmployeeView();
 					wev.setEmployee(emp);
-					OrgContainer oc = contMap.get(ovi.getContainerId());					
-					if (oc != null) {
-						if ( (dept==null) || ((dept!=null) && oc.getDeptName().equalsIgnoreCase(dept)) ){
+					OrgContainer oc = contMap.get(ovi.getContainerId());
+					if (oc != null) {				
+						if ((teamOrdept == null) || (teamOrdept != null))
+						  if (ViewByType.ViewByDept==vType && matchByStringSliced(teamOrdept,oc.getDeptName()) || ViewByType.ViewByTeam==vType && matchByStringSliced(teamOrdept,oc.getTeamName()))
+						{
 							wev.setContainer(oc);
 							wev.setOrgViewItem(ovi);
 							result.add(wev);
 						}
+						
 					} else {
 						log.error("Container does not exist " + ovi);
 					}
@@ -226,12 +253,20 @@ public class CoreDAO {
 		return emps;
 	}
 
-	public List<WebUpdateContainer> getContainers(String viewName) {
-		List<WebUpdateContainer> emps = orgContainerRepository
-				.findByViewNameSorted(viewName).stream().map(orgCont -> new WebUpdateContainer(orgCont.getId(),
-						viewName, orgCont.getDeptName(), orgCont.getGroupName(), orgCont.getTeamName(), 0, ""))
-				.collect(Collectors.toList());
-
+	public List<WebUpdateContainer> getContainers(String viewName, ViewByType viewBy) {
+		
+		final List<WebUpdateContainer> emps;
+		if (viewBy==ViewByType.ViewByTeam) {
+			emps = orgContainerRepository
+					.findByViewTeamSorted(viewName).stream().map(orgCont -> new WebUpdateContainer(orgCont.getId(),
+							viewName, orgCont.getDeptName(), orgCont.getGroupName(), orgCont.getTeamName(), 0, ""))
+					.collect(Collectors.toList());
+		}else {
+			emps = orgContainerRepository
+					.findByViewDeptSorted(viewName).stream().map(orgCont -> new WebUpdateContainer(orgCont.getId(),
+							viewName, orgCont.getDeptName(), orgCont.getGroupName(), orgCont.getTeamName(), 0, ""))
+					.collect(Collectors.toList());
+		}
 		return emps;
 	}
 
@@ -326,12 +361,51 @@ public class CoreDAO {
 		mList.add(per);
 	}
 
-	public void addContainer(GoJSData goData, final WebEmployeeView per) {
+	public void addContainerTeamView(GoJSData goData, final WebEmployeeView per) {
+
+		String fqdn = per.getFQDN(true);
+		if (fqdn.isEmpty()) // FQDN can be dept|group|team - should create dept & grp & team
+			return;
+		fqdn = per.getTeamName();
+		Long team = containerBox.get(fqdn);
+		if (team == null) {
+			// create and add container
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getTeamName(), "", "", "blue", true, Long.getLong(""));
+			goData.getNodedata().add(gsn);
+			containerBox.put(fqdn, gsn.getKey());
+			// s group
+			team = gsn.getKey();
+		}
+		fqdn = fqdn + FIELD_DELIM + per.getGroupName();
+		Long grp = containerBox.get(fqdn);
+		if (grp == null) {
+			// create and add container
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getGroupName(), "", "", "green", true, team);
+			goData.getNodedata().add(gsn);
+			containerBox.put(fqdn, gsn.getKey());
+			// s group
+			grp = gsn.getKey();
+		}
+		fqdn = fqdn + FIELD_DELIM + per.getDeptName();
+		Long dept = containerBox.get(fqdn);
+		if (dept == null) {
+			// create and add container
+			GoJSNodeData gsn = new GoJSNodeData(++INT_CTR, per.getDeptName(), "", "", "purple", true, grp);
+			goData.getNodedata().add(gsn);
+			containerBox.put(fqdn, gsn.getKey());
+			// s group
+			dept = gsn.getKey();
+		}
+
+		per.setCid(dept);
+	}
+
+	public void addContainerDeptView(GoJSData goData, final WebEmployeeView per) {
 		if (per.getInum().equalsIgnoreCase("33294")) {
 			log.info("debug");
 		}
 
-		String fqdn = per.getFQDN();
+		String fqdn = per.getFQDN(false);
 		if (fqdn.isEmpty()) // FQDN can be dept|group|team - should create dept & grp & team
 			return;
 		fqdn = per.getDeptName();
@@ -419,20 +493,24 @@ public class CoreDAO {
 		return mgr;
 	}
 
-	public void loadMaps(GoJSData gojsdata, final String view, final String dept, boolean showLeavers) {
-		List<WebEmployeeView> webview = getViewData(view,dept,showLeavers);
+	public void loadMaps(GoJSData gojsdata, final String view, final String dept, boolean showLeavers,
+			ViewByType vType) {
+		List<WebEmployeeView> webview = getViewData(view, dept, showLeavers, vType);
 		for (WebEmployeeView emp : webview) {
 
 			// if ( (!USE_FILT) || (USE_FILT && !emp.getDeptName().trim().isEmpty() ) ) {
 			emp.setFirstName(trimFirstName(emp.getFirstName()));
 			addToPerson(emp);
 			addToMgr(emp);
-			addContainer(gojsdata, emp);
+			if (ViewByType.ViewByTeam==vType)
+				addContainerTeamView(gojsdata, emp);
+			else
+				addContainerDeptView(gojsdata, emp);
 			// }
 		}
 	}
 
-	public GoJSData genModelGoJS(String view,String dept, boolean links,boolean leavers) {
+	public GoJSData genModelGoJS(String view, String dept, boolean links, boolean leavers, ViewByType vType) {
 
 		INT_CTR = 10000;
 		mgrMap = new HashMap<String, List<WebEmployeeView>>();
@@ -440,7 +518,7 @@ public class CoreDAO {
 		containerBox = new HashMap<String, Long>();
 
 		GoJSData gojs = new GoJSData();
-		loadMaps(gojs, view, dept, leavers);
+		loadMaps(gojs, view, dept, leavers, vType);
 		buildOrg(); // populate subords
 
 		if (links) {

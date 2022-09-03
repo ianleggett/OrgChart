@@ -38,11 +38,40 @@
 			$(tcombo).append('<option>'+item+'</option>');
 		 });		
 	}
-	
-	function setUpJobs(){		
+
+/**	
+ *    team aligned
+ */
+	function setUpJobsByTeam(){				
+		setContainerItems(Object.keys(contData),"teamName");	
+		$('#teamName').change(function(e) {			
+		    var val = $('#teamName').val();		  
+			resetJobs('groupName');
+			resetJobs('deptName'); 
+			tempDept = val;
+			setContainerItems(Object.keys(contData[tempDept]),"groupName");
+		});
+
+		$('#groupName').change(function(e) {		
+		    var val = $('#groupName').val();
+		    resetJobs('deptName'); 
+		    tempGroup = val;
+		    console.log("groupChange "+val)
+		    console.log(JSON.stringify(contData[tempDept][tempGroup]))
+		    setContainerItems(contData[tempDept][tempGroup],"deptName");
+		});
 		
-		setContainerItems(Object.keys(contData),"deptName");	
-		
+		$('#deptName').change(function(e) {		
+		    var val = $('#deptName').val();		    
+		});
+	}
+
+
+	/**	
+	 *    Dept aligned
+	 */	
+	function setUpJobsByDept(){				
+		setContainerItems(Object.keys(contData),"deptName");			
 		$('#deptName').change(function(e) {			
 		    var val = $('#deptName').val();		  
 			resetJobs('groupName');
@@ -50,7 +79,6 @@
 			tempDept = val;
 			setContainerItems(Object.keys(contData[tempDept]),"groupName");
 		});
-
 		$('#groupName').change(function(e) {		
 		    var val = $('#groupName').val();
 		    resetJobs('teamName'); 
@@ -58,11 +86,9 @@
 		    console.log("groupChange "+val)
 		    console.log(JSON.stringify(contData[tempDept][tempGroup]))
 		    setContainerItems(contData[tempDept][tempGroup],"teamName");
-		});
-		
+		});	
 		$('#teamName').change(function(e) {		
 		    var val = $('#teamName').val();
-		    
 		});
 	}
 	
@@ -106,7 +132,7 @@
 			    	}else{		    		
 			    		$('#editCode').modal('hide');
 				    	$('#msgdialog').modal('show');
-				    	$('#msgtitle').html('CCY updated');
+				    	$('#msgtitle').html('updated');
 			    		$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed '+data.msg+'</button>');		    		
 			    	}	
 			    },	
@@ -149,9 +175,9 @@
 
 		setTable();
 
-		$.getJSON('containerAggData.json?v=${view}', function(data) {								
+		$.getJSON('containerAggData.json?v=${view}&viewType=ViewByTeam', function(data) {								
 			contData = data.strMapList;
-			setUpJobs();
+			setUpJobsByTeam();
 		});	
 		
 	}	
@@ -223,12 +249,12 @@
 										data : "lastName"
 									},
 									{
-										data : "deptName",
+										data : "teamName",
 										render : deptTeamRender
 									}, {
 										data : "groupName"
 									}, {
-										data : "teamName"
+										data : "deptName"
 									}, {
 										data : "city"
 									}, {
@@ -279,9 +305,9 @@
 			<th>inum</th>
 			<th>firstName</th>
 			<th>lastName</th>
-			<th>Dept</th>
-			<th>Grp</th>
 			<th>Team</th>
+			<th>Grp</th>
+			<th>Dept</th>
 			<th>city</th>			
 			<th>jobCat</th>
 			<th>jobTitle</th>			
@@ -311,8 +337,8 @@
 
 <div id="snackbar">Some text some message..</div>
 
-<div id="editCode" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+<div id="editCode" class="modal fade bd-example-modal-lg" role="dialog">
+  <div class="modal-dialog modal-lg">
 <form action="updateContainer" method="POST">
     <!-- Modal content-->
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -325,9 +351,9 @@
      <div class="modal-body">
      	 <table class="table-striped table-bordered">
      	<tr>		
-			<td align="right"><div class="col">Dept</div></td>
+			<td align="right"><div class="col">Team</div></td>
 			<td> <div class="col">
-			 <select id="deptName" class="autocomplete">
+			 <select id="teamName" class="autocomplete">
   			</select>
 			</div></td>								
 		</tr>
@@ -339,9 +365,9 @@
 			</div></td>	
 		</tr>
 		<tr>		
-			<td align="right"><div class="col">Team</div></td>
+			<td align="right"><div class="col">Dept</div></td>
 			<td> <div class="col">			
-			<select id="teamName" class="autocomplete">
+			<select id="deptName" class="autocomplete">
   			</select>
 			</div></td>	
 		</tr>

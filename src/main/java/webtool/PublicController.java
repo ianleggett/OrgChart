@@ -29,6 +29,7 @@ import webtool.pojo.OrgContainer;
 import webtool.pojo.RespStatus;
 import webtool.pojo.TableData;
 import webtool.pojo.UserAndRole;
+import webtool.pojo.ViewByType;
 import webtool.pojo.WebEmployeeView;
 import webtool.pojo.WebStatusUpdate;
 import webtool.pojo.WebUpdateContainer;
@@ -42,6 +43,8 @@ import webtool.utils.CoreDAO;
 public class PublicController {
 
 	public static String SESS_VIEW = "session_view";
+	public static String SESS_DEPT = "session_dept";
+	
 	
 	static Logger log = Logger.getLogger(PublicController.class);
 	@Autowired
@@ -142,35 +145,46 @@ public class PublicController {
 		response.getOutputStream().close();
 	}
 
-	private String sessionView(HttpServletRequest request,String vStr) {
-		final Object sess = request.getSession().getAttribute(SESS_VIEW);
+	
+	private String getStrSetting(final String vStr,final Object sess, final String defaultStr) {
 		final String res;
 		if  ((vStr!=null)&&(!vStr.isBlank())) {
 			res = vStr;			 
 		}else if (sess != null) {
 			res = sess.toString();
 		}else {
-			res = CoreDAO.DEFAULT_VIEW;
-		}		
-		request.getSession().setAttribute(SESS_VIEW, res);		
+			res = defaultStr;
+		}
 		return res;
 	}
+	
+	private void setSessionDetails(HttpServletRequest request,ModelAndView mv,String vStr, String vDept) {
+		final Object sessview = request.getSession().getAttribute(SESS_VIEW);		
+		final String view = getStrSetting(vStr,sessview,CoreDAO.DEFAULT_VIEW);
+		request.getSession().setAttribute(SESS_VIEW, view);
+		final Object sessdep = request.getSession().getAttribute(SESS_DEPT);
+		final String dept = getStrSetting(vDept,sessdep,CoreDAO.DEFAULT_DEPT);
+		request.getSession().setAttribute(SESS_DEPT, dept);
+		mv.addObject("view",view);
+		mv.addObject("dept",dept);		
+	}
+	
 	@RequestMapping(value = "/staff")
 	public ModelAndView staff( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("staff");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);		
 		return mv;
 	}
 	@RequestMapping(value = "/containerEdit")
 	public ModelAndView containers( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("containerEdit");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
 	@RequestMapping(value = "/viewEdit")
 	public ModelAndView views( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("viewEdit");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
 	
@@ -178,29 +192,28 @@ public class PublicController {
 	public ModelAndView diag( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName,
 			@RequestParam(value = "d", required = false) String dept) {		
 		ModelAndView mv = new ModelAndView("diag");		
-		mv.addObject("view", sessionView(request,viewName) );
-		mv.addObject("dept", dept );
+		setSessionDetails(request,mv,viewName,dept);		
 		return mv;
 	}
 	
 	@RequestMapping(value = "/uploadstaff")
 	public ModelAndView uploadstaff( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("uploadstaff");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
 	
 	@RequestMapping(value = "/uploadgroup")
 	public ModelAndView uploadgroup( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("uploadgroup");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
 	
 	@RequestMapping(value = "/uploadstatus")
 	public ModelAndView uploadstatus( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("uploadstatus");
-		mv.addObject("view", sessionView(request,viewName) );
+		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
 	
@@ -211,19 +224,20 @@ public class PublicController {
 								@RequestParam(name = "l",required = false) String linksStr) {
 		final boolean links = linksStr!=null ? true : false;
 		final boolean leavers = false;
-		return coreDAO.genModelGoJS(viewName,dept, links,leavers);	
+		return coreDAO.genModelGoJS(viewName,dept, links,leavers, ViewByType.ViewByTeam);	
 	}
 	
 	@RequestMapping(value = "/containerdata.json", method = RequestMethod.GET)
 	@ResponseBody
 	public TableData<WebUpdateContainer> getContainers(@RequestParam(name = "v",required = true) String viewName) {
-		return new TableData<WebUpdateContainer>(coreDAO.getContainers(viewName));
+		return new TableData<WebUpdateContainer>(coreDAO.getContainers(viewName,ViewByType.ViewByTeam));
 	}
 	
 	@RequestMapping(value = "/containerAggData.json", method = RequestMethod.GET)
 	@ResponseBody
-	public AggContList getAggContainerData(@RequestParam(name = "v",required = true) String viewName) {
-		return coreDAO.getAggContainerData(viewName);
+	public AggContList getAggContainerData(HttpServletRequest request, @RequestParam(name = "v",required = true) String viewName,@RequestParam(name = "viewType",required = true) String viewtype) {
+		
+		return coreDAO.getAggContainerData(viewName,ViewByType.valueOf(viewtype)/*ViewByType.ViewByTeam*/);
 	}
 	
 	
@@ -237,7 +251,7 @@ public class PublicController {
 	@ResponseBody
 	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName, @RequestParam(name = "d",required = false) String dept) {
 		final boolean leavers = false;
-		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,dept,leavers));
+		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,dept,leavers,ViewByType.ViewByTeam));
 	}
 
 	@RequestMapping(value = "/updateStaff.json", method = RequestMethod.POST, consumes = {

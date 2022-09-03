@@ -1,6 +1,8 @@
 package test;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -13,8 +15,10 @@ import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.Assert;
 
 import webtool.pojo.UserInfo;
+import webtool.utils.CoreDAO;
 import webtool.utils.ThreadedQueueProcessor;
 import webtool.utils.UtilsWeb;
 
@@ -114,6 +118,24 @@ class TestStrPair {
 //		Thread.sleep(15000);
 //							
 //	}
+	
+	
+	private boolean matchByStringSliced(String teamDept,String matchStr) {
+		if (teamDept.equalsIgnoreCase(matchStr) ) return true;
+		String args[] = matchStr.split(CoreDAO.MULTI_DELIMITER);
+		for(String ag : args) {
+			if ( teamDept.equalsIgnoreCase(ag) ) return true;
+		}
+		return false;
+	}
+	
+	@Test
+	void TestStringSplit() {
+		
+		assertEquals(matchByStringSliced("valuations","valuations/hydro"),true);
+		assertEquals(matchByStringSliced("valuations","hydro/valuations"),true);
+		assertNotEquals(matchByStringSliced("valuations","hydro/valuations"), false );
+	}
 	
 	
 	@Test

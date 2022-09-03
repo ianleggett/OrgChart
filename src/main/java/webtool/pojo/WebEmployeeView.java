@@ -50,8 +50,12 @@ public class WebEmployeeView {
 	
 	public List<WebEmployeeView> subord = new ArrayList<WebEmployeeView>();
 	
-	public String getFQDN() {
-		return this.getDeptName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getTeamName();
+	public String getFQDN(boolean team) {
+		if (team) {
+			return this.getTeamName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getDeptName();
+		}else {
+			return this.getDeptName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getTeamName();
+		}
 	}
 	
 	public void addSubordinate(WebEmployeeView per) {
