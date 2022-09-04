@@ -120,7 +120,10 @@ function doChanges(){
 		    	if (data.statusCode==0){		   
 		    		refreshView();	    		
 		    	}else{		    		
-		    		$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed '+data.msg+'</button>');		    		
+		    		$('#editCode').modal('hide');
+			    	$('#msgdialog').modal('show');
+			    	$('#msgtitle').html('updated');
+		    		$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed '+data.msg+'</button>');		     		
 		    	}	
 		    },	
 		    fail: function(jqXHR, textStatus, errorThrown) {
@@ -182,7 +185,7 @@ function initTable() {
 
 <jsp:include page="menu.jsp" />
  
-<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">Dept | Group | Team</td><td><button type="button" class="btn btn-success" onclick="addContainer()">add</button>  </td></tr></table></div>
+<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">Teams & Groups</td><td><button type="button" class="btn btn-success" onclick="addContainer()">add</button>  </td></tr></table></div>
 
 <table id="example" class="table table-striped table-bordered" cellspacing="0" width="90%">
         <thead>
