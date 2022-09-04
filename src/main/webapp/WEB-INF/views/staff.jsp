@@ -214,7 +214,7 @@
 		return '<a href="#" onclick="showContainerEdit(\''
 		+ row.inum
 		+ '\',\''+row.containerId+'\')" >'														
-		+ '<i class="far fa-edit"></i></a> <a href="diag?v=${view}&d='+data+'">' + data + '</a>';
+		+ '<i class="far fa-edit"></i></a> <a href="diag?v=${view}&d='+data+'" rel="noopener noreferrer" target="_blank" >' + data + '</a>';
 	}
 	
 	function setTable(tabledata) {

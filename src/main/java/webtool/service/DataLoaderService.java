@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +55,17 @@ public class DataLoaderService {
 	static final String GRP_FILE = "/home/ian/Downloads/PDT-default-group.csv";
 	// static final String FILE = "/Users/i34976/Downloads/PDT_test.csv";
 
-	final List<String> STAFF_HDR = List.of("Leaver/Active","ID", "First Name", "Last", "City Descr", "Descr", "Contract Type",
-			"Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name", "Mgr ID");
-	final List<String> GROUP_HDR = List.of("ID", "group", "dept", "team-name");
-	//Team by org chart (level1) ,Department (Level 2), Team Name (Level 3)
+	public static final List<String> STAFF_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr", "Descr",
+			"Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name",
+			"Mgr ID");
+	public static final List<String> GROUP_HDR = List.of("ID", "group", "dept", "team-name");
+	// Team by org chart (level1) ,Department (Level 2), Team Name (Level 3)
 
+	public static final List<String> EXPORT_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr", "Descr",
+			"Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name",
+			"Mgr ID", "group", "dept", "team-name");
+	
+	
 	boolean inprogress = false;
 	StringBuilder sb = new StringBuilder();
 

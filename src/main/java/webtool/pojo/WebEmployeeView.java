@@ -85,6 +85,32 @@ public class WebEmployeeView {
 		
 		return per;
 	}
+	/**
+	 * For exporting a record to CSV
+	 * @return
+	 */
+	public List<String> getExportValues(){
+		List<String> strList = new ArrayList<String>();
+		strList.add(this.leaver ? "Active" : "Leaver");
+		strList.add(this.inum);
+		strList.add(this.firstName);
+		strList.add(this.lastName);
+		strList.add(this.city);
+		strList.add(this.descr);
+		strList.add(this.contrType);
+		strList.add(this.jobCat);
+		strList.add(this.jobTitle);
+		strList.add(this.started);
+		strList.add(this.geoReg);
+		strList.add(this.email);
+		strList.add(this.vendor);
+		strList.add(this.linkName);
+		strList.add(this.linkiNum);
+		strList.add(this.groupName);
+		strList.add(this.deptName);
+		strList.add(this.teamName);		
+		return strList;
+	}
 	
 	public boolean isContractor() {
 		return this.contrType.toLowerCase().startsWith("contr");

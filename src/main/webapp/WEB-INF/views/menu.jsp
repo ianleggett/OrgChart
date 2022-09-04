@@ -60,9 +60,11 @@
             		</div>              		
             	<div class="menuItem"><a href="staff">People</a></div>          	
             	<div class="menuItem"><a href="containerEdit">Grouping</a></div>            	
+            	<!-- 
             	<sec:authorize access="!isAuthenticated()">
             		<a class="menuItem" onclick="showlogin()" >Sign in</a>
             	</sec:authorize>
+            	-->
             	<sec:authorize access="isAuthenticated()">
             		<div id="btn-connect" class="menuItem menuGo">Connect</div>
 				<sec:authorize access="hasAnyRole({'ROLE_ADMIN','ROLE_USER'})">
@@ -82,12 +84,15 @@
 	                		<li><a class="dropdown-item" href="/logout2"><i class="fas fa-sign-out-alt"></i> logout</a></li>
 							</sec:authorize>
 							</sec:authorize>
-							 <li><a class="dropdown-item" href="/uploadstaff"><i class="far fa-question-circle"></i>Import Staff Data</a></li>
-							 <li><a class="dropdown-item" href="/uploadgroup"><i class="far fa-question-circle"></i>Import Team Data</a></li>
+							 <li><a class="dropdown-item" href="/uploadstaff"><i class="fas fa-file-import"></i>Import Staff Data</a></li>
+							 <li><a class="dropdown-item" href="/uploadgroup"><i class="fas fa-file-import"></i>Import Team Data</a></li>
+							 <li><a class="dropdown-item" href="/exportviewlist"><i class="fas fa-file-export"></i>Export View Data</a></li>
 						    <li><a class="dropdown-item"><i class="far fa-question-circle"></i> Support</a></li>
 						    <li><a class="dropdown-item"><i class="fas fa-flask"></i> Request a feature</a></li>
+						    <!-- 
 						    <li><a class="dropdown-item"><i class="fas fa-balance-scale"></i> Terms & Conditions</a></li>
 						    <li><a class="dropdown-item"><i class="fas fa-user-secret"></i> Privacy Policy</a></li>
+						    -->
 						</ul>
             		</div>            	
             </div>

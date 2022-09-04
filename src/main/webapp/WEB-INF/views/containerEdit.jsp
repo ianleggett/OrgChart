@@ -128,14 +128,13 @@ function doChanges(){
 		    	$('#msgdetails').html('<button type="button" class="btn btn-danger">Failed - system is down please contact support desk</button>');
 		    },
 		});		
-    }	
-	  
+    }	 
 }
  
  
 function deptTeamRender(data, type, row, meta){
 	//console.log(JSON.stringify(row.inum));
-	return '<a href="diag?v=${view}&d='+data+'">' + data + '</a>';
+	return '<a href="diag?v=${view}&d='+data+'" rel="noopener noreferrer" target="_blank" >' + data + '</a>';
 }
 
 function initTable() {

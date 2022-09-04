@@ -1,8 +1,10 @@
 package webtool.utils;
 
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -220,6 +223,28 @@ public class CoreDAO {
 		return result;
 	}
 
+	/**
+	 * EXPORT current view data to CSV
+	 * @param writer
+	 * @param view
+	 * @return
+	 * @throws IOException
+	 */
+	public CSVPrinter exportStaffView(Writer writer,String view) throws IOException {
+		final CSVPrinter csvPrinter = new CSVPrinter(writer,
+				CSVFormat.RFC4180.withFirstRecordAsHeader());
+		
+		List<WebEmployeeView> viewData = this.getViewData(view, null, false, ViewByType.ViewByDept);
+		
+		csvPrinter.printRecord(DataLoaderService.EXPORT_HDR);
+		for(WebEmployeeView wev : viewData) {
+			csvPrinter.printRecord( wev.getExportValues() );
+		}
+		
+		return csvPrinter;
+	}
+	
+	
 	public RespStatus updateStaffContainer(WebEmployeeView empView) {
 		final String viewName = empView.getDescr();
 		// 1. find container id

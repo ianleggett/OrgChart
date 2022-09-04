@@ -1,13 +1,18 @@
 package webtool;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -133,18 +138,30 @@ public class PublicController {
 		return wsu;		
 	}
 
-	// views media uploaded
-	@RequestMapping(value = "/media", method = RequestMethod.GET)
-	public void showMedia(@RequestParam(name = "caseguid") String caseguid, @RequestParam(name = "slot") int slotnum,
-			HttpServletResponse response) throws ServletException, IOException {
-		Optional<FileDB> file = storageService.getFile(caseguid, slotnum);
-		if (file.isPresent()) {
-			response.setContentType(file.get().getType());
-			response.getOutputStream().write(file.get().getData());
+	@RequestMapping(value = "/exportviewlist")
+	public void exportproclist(HttpSession session, HttpServletResponse response) throws Exception {
+		final String NEW_LINE_SEPARATOR = "\n";
+		
+		final Object sessview = session.getAttribute(SESS_VIEW);				
+		
+		try {
+			response.setContentType("application/force-download");
+			response.setHeader("Content-Disposition", "attachment; filename=export_staff.csv");			
+								
+			 Writer writer = new BufferedWriter(response.getWriter());
+			 
+			 CSVPrinter csvprinter = coreDAO.exportStaffView(writer, sessview.toString());
+	 
+			 csvprinter.flush();
+			 csvprinter.close();	         
+	         
+			response.flushBuffer();			
+		} catch (Exception e) {
+			log.debug("Request could not be completed at this moment. Please try again.");
+			e.printStackTrace();
 		}
-		response.getOutputStream().close();
-	}
 
+	}
 	
 	private String getStrSetting(final String vStr,final Object sess, final String defaultStr) {
 		final String res;
