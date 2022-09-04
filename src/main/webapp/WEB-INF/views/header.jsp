@@ -14,7 +14,7 @@
 	
 <link href="/resources/css/snackbar.css" rel="stylesheet">
 
-<link href="/resources/css/styles.css" rel="stylesheet" />
+<!-- link href="/resources/css/styles.css" rel="stylesheet" /-->
 
 <link rel="stylesheet" href="/resources/css/webtool.css" />
 

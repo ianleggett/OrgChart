@@ -33,7 +33,6 @@ import webtool.pojo.TableData;
 import webtool.pojo.UserAndRole;
 import webtool.repository.CcyRepository;
 import webtool.repository.UserRepository;
-import webtool.service.SystemStatusService;
 import webtool.utils.MailDAO;
 import webtool.utils.Settings;
 import webtool.utils.SettingsDAO;
@@ -58,42 +57,42 @@ public class ControllerAdmin {
 	private ApplicationContext appContext;
 	@Autowired
 	private MailDAO emailDAO;	
-	@Autowired
-	private SystemStatusService systemStatusService;
+//	@Autowired
+//	private SystemStatusService systemStatusService;
 	
 	@PostConstruct
 	private void init() {
 		// settingsDAO.startStreaming();
 	}
 	
-	@RequestMapping(value = "/setsystem.json", method = RequestMethod.POST, consumes = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
-	@ResponseBody
-	public RespStatus setsystem(@RequestBody SystemStatus status) {		
-		systemStatusService.setStatus(status);
-		return RespStatus.OK;
-	}
-	
-	@RequestMapping(value = "/getsystem.json", method = RequestMethod.GET)
-	@ResponseBody
-	public SystemStatus getsystem() {
-		return systemStatusService.getSystemStatus();		
-	}
-
-	@RequestMapping(value = "/setsystemmsg.json", method = RequestMethod.POST, consumes = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
-	@ResponseBody
-	public RespStatus setsystemmsg(@RequestBody SystemMessage sysmsg) {	
-		log.info("Set message "+sysmsg);
-		systemStatusService.setNewMessage(sysmsg.getMsg());
-		return RespStatus.OK;
-	}
-	
-	@RequestMapping(value = "/getsystemmsg.json", method = RequestMethod.GET)
-	@ResponseBody
-	public SystemMessage getsystemmsg() {
-		return systemStatusService.getMessage();		
-	}
+//	@RequestMapping(value = "/setsystem.json", method = RequestMethod.POST, consumes = {
+//			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
+//	@ResponseBody
+//	public RespStatus setsystem(@RequestBody SystemStatus status) {		
+//		systemStatusService.setStatus(status);
+//		return RespStatus.OK;
+//	}
+//	
+//	@RequestMapping(value = "/getsystem.json", method = RequestMethod.GET)
+//	@ResponseBody
+//	public SystemStatus getsystem() {
+//		return systemStatusService.getSystemStatus();		
+//	}
+//
+//	@RequestMapping(value = "/setsystemmsg.json", method = RequestMethod.POST, consumes = {
+//			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
+//	@ResponseBody
+//	public RespStatus setsystemmsg(@RequestBody SystemMessage sysmsg) {	
+//		log.info("Set message "+sysmsg);
+//		systemStatusService.setNewMessage(sysmsg.getMsg());
+//		return RespStatus.OK;
+//	}
+//	
+//	@RequestMapping(value = "/getsystemmsg.json", method = RequestMethod.GET)
+//	@ResponseBody
+//	public SystemMessage getsystemmsg() {
+//		return systemStatusService.getMessage();		
+//	}
 
 	
 	@RequestMapping(value = "/")

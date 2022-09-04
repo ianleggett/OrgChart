@@ -53,7 +53,6 @@ import webtool.repository.PaymentTypeRepository;
 import webtool.repository.UserRepository;
 import webtool.security.SecurityUserDetailInterface;
 import webtool.service.DataLoaderService;
-import webtool.service.SystemStatusService;
 
 @Component
 @Scope("singleton")
@@ -101,8 +100,8 @@ public class CoreDAO {
 	@Autowired
 	UserObjectDAO userDAO;
 
-	@Autowired
-	private SystemStatusService systemStatusService;
+//	@Autowired
+//	private SystemStatusService systemStatusService;
 
 	@Autowired
 	private DataLoaderService dataloaderService;
@@ -126,8 +125,8 @@ public class CoreDAO {
 	}
 
 	private void initProc() {
-		systemStatusService.setWorking(true);
-		systemStatusService.setNewMessage("System OK");
+//		systemStatusService.setWorking(true);
+//		systemStatusService.setNewMessage("System OK");
 		dataloaderService.initDefaultView();
 		// dataloaderService.load();
 
