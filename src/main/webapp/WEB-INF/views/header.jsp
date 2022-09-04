@@ -16,9 +16,6 @@
 
 <link href="/resources/css/styles.css" rel="stylesheet" />
 
-<link href="/resources/css/datetime/daterangepicker.css"
-	rel="stylesheet">
-
 <link rel="stylesheet" href="/resources/css/webtool.css" />
 
 <script src="/resources/js/jquery-3.6.0.min.js"></script>
@@ -28,13 +25,7 @@
 
 <script src="/resources/js/menu-scripts.js"></script>
 
-<script src="/resources/js/techiaz.js"></script>
-<script src="/resources/js/techiazutils.js"></script>
-
-<script src="/resources/js/moment.js" crossorigin="anonymous"></script>
-
-<script src="/resources/js/snackbar.js"></script>
-<script src="/resources/js/datetime/daterangepicker.min.js"></script>
+<script src="/resources/js/orgchartutils.js"></script>
 
 <script src="resources/js/jquery-3.6.0.min.js"></script>
 
