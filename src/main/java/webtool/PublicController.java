@@ -294,13 +294,12 @@ public class PublicController {
 		return coreDAO.addView(postData);
 	}
 
-//	@RequestMapping(value = "/")
-//	public ModelAndView home(HttpSession session, @RequestParam(value = "m", required = false) Integer basknum) throws IOException {
-//		ModelAndView mv = new ModelAndView("main");
-//		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		//String name = auth.getName();
-//		return mv;
-//	}
+	@RequestMapping(value = "/")
+	public ModelAndView home(HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
+		ModelAndView mv = new ModelAndView("home");
+		setSessionDetails(request,mv,viewName,null);
+		return mv;
+	}
 
 //	@RequestMapping(value = "/browse", method = { RequestMethod.GET })
 //	public ModelAndView browse() {

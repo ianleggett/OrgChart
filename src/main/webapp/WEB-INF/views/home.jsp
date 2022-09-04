@@ -18,7 +18,10 @@
 </script>
 <div class="container">
 <h2>OrgView demo site</h2>
-<p>Sample of ideas and proof of concepts</p>
+<p>Sample ideas and proof of concepts</p>
+<br/>
+<p>* You can zoom diagrams using CTRL+mousewheel</p>
+<p>* Click blue button to see the current view</p>
 </div>
 
 </body>
