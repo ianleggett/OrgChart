@@ -8,6 +8,7 @@ public class GoJSNodeData {
 	//{ key: 1, text: "Alpha", color: "lightblue", isGroup: true , group: 6
 	long key;
 	String text;
+	String category;
 	String title;
 	String color;
 	String city;
@@ -18,10 +19,11 @@ public class GoJSNodeData {
 		super();
 	}
 	
-	public GoJSNodeData(long key, String text, String title,String city, String color, Boolean isGroup, Long group) {
+	public GoJSNodeData(long key, String text, String cat,String title,String city, String color, Boolean isGroup, Long group) {
 		super();
 		this.key = key;
 		this.text = text;
+		this.category = cat;
 		this.title = title;
 		this.color = color;
 		this.isGroup = isGroup;
@@ -75,6 +77,16 @@ public class GoJSNodeData {
 	public void setCity(String city) {
 		this.city = city;
 	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
 	
 	
 }

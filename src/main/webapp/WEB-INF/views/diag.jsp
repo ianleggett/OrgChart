@@ -182,10 +182,18 @@
 		    	    		                minSize: new go.Size(50, 14),
 		    	    		                margin: new go.Margin(0, 0, 0, 3)
 		    	    		              },
+		    	    		      new go.Binding("text", "category").makeTwoWay()),
+		    		              $(go.TextBlock, textStyle(),
+		    	    		              {
+		    	    		                row: 2, column: 0, columnSpan: 5,
+		    	    		                editable: true, isMultiline: false,
+		    	    		                minSize: new go.Size(50, 14),
+		    	    		                margin: new go.Margin(0, 0, 0, 3)
+		    	    		              },
 		    	    		      new go.Binding("text", "title").makeTwoWay()),
 		    	    		      $(go.TextBlock, textStyle(),
 		    	    		              {
-		    	    		                row: 2, column: 0, columnSpan: 5,
+		    	    		                row: 3, column: 0, columnSpan: 5,
 		    	    		                editable: true, isMultiline: false,
 		    	    		                minSize: new go.Size(50, 14),
 		    	    		                margin: new go.Margin(0, 0, 0, 3)
