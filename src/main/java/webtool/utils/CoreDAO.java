@@ -61,7 +61,7 @@ public class CoreDAO {
 	public static final String FIELD_DELIM = "|";
 	public static final String CRLF = "\\r\\n";
 	public static final String DEFAULT_VIEW = "default";
-	public static final String DEFAULT_DEPT = "= all =";
+	public static final String DEFAULT_DEPT = "-all-";
 	public static final String WILDCARD = "%";
 	public static final String MULTI_DELIMITER = "/";
 	

@@ -58,7 +58,7 @@
 		});	
 		
 		****/
-	}
+	
 	
 	 function startUpdate(){
 		 
@@ -82,10 +82,8 @@
 	 }
 </script>
 
+<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">Import Staff data</td></tr></table></div>
 
-			<div class="modal-header">
-				<b>Import Staff data</b>
-			</div>
 
 <div class="accordion-item">
 	<div class="accordion-body">

@@ -9,7 +9,7 @@
 <jsp:include page="menu.jsp" />
 
 <script type="text/javascript">
-    const OPTION_ALL = '= all ='; 
+    const OPTION_ALL = '-all-'; 
 	var csrfname = "${_csrf.parameterName}";
 	var csrfvalue = "${_csrf.token}";
 	var contData;

@@ -17,11 +17,60 @@
 
 </script>
 <div class="container">
-<h2>OrgView demo site</h2>
-<p>Sample ideas and proof of concepts</p>
-<br/>
-<p>* You can zoom diagrams using CTRL+mousewheel</p>
-<p>* Click blue button to see the current view</p>
+
+<div class="card">
+  <div class="card-body">
+   
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">OrgView demo site</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Notes & Information</h6>
+    <p class="card-text">Starting point for ideas and proof of concepts</p>
+   <p><i class="fas fa-info-circle"></i> You can zoom diagrams using CTRL+mousewheel</p>
+   <p><i class="fas fa-info-circle"></i> Click blue menu button to see the current view</p>
+   <p><i class="fas fa-info-circle"></i> Org Diagrams key [blue box : contractor, green box : staff]</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+   
+  </div>
+</div>
+
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+        Example, Find someone and assign/reassign to a team
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+       <img src="/resources/images/changeTeam2.gif" alt="Changing a team" style="width:80%;">
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Example, List people in Houston and show a team graphic
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <img src="/resources/images/findHouston.gif" alt="Fin Houston" style="width:80%;">
+      </div>
+    </div>
+  </div>
+ 
+</div>
+
+
+
 </div>
 
 </body>

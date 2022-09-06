@@ -212,7 +212,7 @@ function initTable() {
         <button type="button" class="btn btn-success" onclick="doChanges()">Update</button>         
       </div>
      <div class="modal-body">
-     	 <table class="table-striped table-bordered">
+     	 <table class="table table-striped table-bordered">
      	<tr>		
 			<td align="right"><div class="col">Team</div></td>
 			<td> <div class="col"><input type="text" class="form-control" id="teamName" placeholder="team name"></div></td>								

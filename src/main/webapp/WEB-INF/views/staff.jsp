@@ -298,6 +298,9 @@
 	}
 </script>
 
+<div id='topstrip' class="alert alert-primary"><table width="100%"><tr><td align="center">People</td></tr></table></div>
+
+
 <table id="example" class="table table-striped table-bordered">
 	<thead>
 		<tr>			
@@ -349,7 +352,7 @@
         <button type="button" class="btn btn-success" onclick="doChanges()">Update</button>         
       </div>
      <div class="modal-body">
-     	 <table class="table-striped table-bordered">
+     	 <table class="table table-striped table-bordered">
      	<tr>		
 			<td align="right"><div class="col">Team</div></td>
 			<td> <div class="col">
