@@ -28,10 +28,13 @@ public class Employee {
 	String email;
 
 	String vendor;
+	
+	String grp;
+	String func;
 
 	public static Employee from(Person per) {
 		return new Employee(per.iNum, per.firstName, per.lastName, per.city, per.contrType, per.descr, per.jobCat,
-				per.jobTitle, per.started, per.geoReg, per.email, per.vendor, per.isLeaver());
+				per.jobTitle, per.started, per.geoReg, per.email, per.vendor,per.group,per.func, per.isLeaver());
 	}
 	
 
@@ -40,7 +43,7 @@ public class Employee {
 	}
 
 	public Employee(String inum, String firstName, String lastName, String city, String contrType, String descr,
-			String jobCat, String jobTitle, String started, String geoReg, String email, String vendor, Boolean leaver) {
+			String jobCat, String jobTitle, String started, String geoReg, String email, String vendor, String group,String func, Boolean leaver) {
 		super();
 		this.inum = inum;
 		this.firstName = firstName;
@@ -54,6 +57,8 @@ public class Employee {
 		this.geoReg = geoReg;
 		this.email = email;
 		this.vendor = vendor;
+		this.grp = group;
+		this.func = func;
 		this.leaver = leaver;
 	}
 
@@ -160,6 +165,25 @@ public class Employee {
 	public void setLeaver(Boolean leaver) {
 		this.leaver = leaver;
 	}
+
+	public String getGrp() {
+		return grp;
+	}
+
+	public void setGrp(String grp) {
+		this.grp = grp;
+	}
+
+
+	public String getFunc() {
+		return func;
+	}
+
+
+	public void setFunc(String func) {
+		this.func = func;
+	}
+
 
 
 

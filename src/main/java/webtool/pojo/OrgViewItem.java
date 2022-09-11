@@ -5,12 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "oviewitem",uniqueConstraints = { @UniqueConstraint(columnNames = { "viewName", "iNum" }) })
+@Table(name = "oviewitem",uniqueConstraints = { @UniqueConstraint(columnNames = { "viewName", "iNum", "containerId" }) })
 public class OrgViewItem {
 	
 	@Id
@@ -23,12 +24,11 @@ public class OrgViewItem {
 	String iNum;
 	
 	long containerId;
-	
-	String role;
+		
+	String role;    // role is the function this person brings
 	String linkName;
 	String linkValue;
 	String linkiNum;
-	
 	
 	public OrgViewItem() {
 		super();

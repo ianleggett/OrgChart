@@ -29,14 +29,14 @@
 	function pageStart() {	
 		console.log('viewname = ${view}');
 		
-		$.getJSON('containerAggData.json?v=${view}&viewType=ViewByTeam', function(data) {								
-			contData = data.strMapList;
+		$.getJSON('containerAggData.json?v=${view}', function(data) {								
+			contData = data;
 			setUpJobs();
 		});
 		
 		test();
 		
-		getData("${dept}");
+		getData("${teamlist}");
 		
 	}
 	
@@ -45,16 +45,16 @@
 		$( tcombo ).empty();
 		$( "<option>" ).html(OPTION_ALL).appendTo( tcombo );	
 		$.each( grplst, function( i, item ) {
-			selected = (item=="${dept}") ? 'selected' : '';
-			$(tcombo).append('<option '+selected+'>'+item+'</option>');
+			selected = (item.teamName=="${teamlist}") ? 'selected' : '';
+			$(tcombo).append('<option '+selected+'>'+item.teamName+'</option>');
 		 });		
 	}
      function setUpJobs(){		
 		
-		setContainerItems(Object.keys(contData),"deptName");	
+		setContainerItems(contData,"teamName");	
 		
-		$('#deptName').change(function(e) {			
-		    var val = $('#deptName').val();			   
+		$('#teamName').change(function(e) {			
+		    var val = $('#teamName').val();			   
 			// redraw the group
 			getData(val)
 		});
@@ -328,7 +328,7 @@
 	<table align="center"><tr>
 	
 	<td>
-	<select id="deptName" class="autocomplete">
+	<select id="teamName" class="autocomplete">
   			</select>
   	</td></tr></table>
 

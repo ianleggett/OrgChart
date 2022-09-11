@@ -2,6 +2,7 @@ package webtool.pojo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import webtool.utils.CoreDAO;
 
@@ -14,6 +15,7 @@ public class WebEmployeeView {
 
 	static int CTR = 1000;
 	static final String BLANK = "";
+	static final String DELIM = ";";
 	static final String LV_LEAVER_STYLE = " fill:#f9f,stroke:#333,stroke-width:px";
 	static final String LV_CONTR_STYLE = " fill:#ffdddd,stroke:#333,stroke-width:px";
 	
@@ -41,23 +43,51 @@ public class WebEmployeeView {
 	String linkName;  // link type
 	String linkValue;  // reports to
 	String linkiNum;  // reports to
+
+	///// old container data
+	String deptName;  // group
+	String groupName; // function
+	
+	List<String> teams = new ArrayList<String>();
+	List<Long> cids = new ArrayList<Long>();
 	
 	/**** container stuff ****/
-	long cid;
-	String deptName;
-	String groupName;
-	String teamName;
+//	long cid;        // is this used???
+//	String teamName;
 	
 	public List<WebEmployeeView> subord = new ArrayList<WebEmployeeView>();
 	
-	public String getFQDN(boolean team) {
-		if (team) {
-			return this.getTeamName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getDeptName();
-		}else {
-			return this.getDeptName()+CoreDAO.FIELD_DELIM+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getTeamName();
-		}
+	public void addContainer(final OrgContainer oc) {
+		teams.add(oc.getTeamName());
+	//	cids.add(oc.getId());
+	}
+		
+	public void addCid(Long cid) {
+		cids.add(cid);
 	}
 	
+	public List<String> getFQDNs(boolean teamDept) {
+		// use the team + func + grp
+		return teams.stream().map(team -> team+this.getGroupName()+CoreDAO.FIELD_DELIM+this.getDeptName()).collect(Collectors.toList());
+	}
+	
+	public String getDelimitedTeams() {
+		StringBuilder sb = new StringBuilder();
+		for(String t : teams) {
+			sb.append(t+DELIM);
+		}
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}
+	
+	public List<String> getTeams() {
+		return teams;
+	}
+
+	public void setTeams(List<String> teams) {
+		this.teams = teams;
+	}
+
 	public void addSubordinate(WebEmployeeView per) {
 		if (!subord.contains(per))
 			subord.add(per);
@@ -108,7 +138,7 @@ public class WebEmployeeView {
 		strList.add(this.linkiNum);
 		strList.add(this.groupName);
 		strList.add(this.deptName);
-		strList.add(this.teamName);		
+		strList.add(getDelimitedTeams());		
 		return strList;
 	}
 	
@@ -155,14 +185,16 @@ public class WebEmployeeView {
 		this.email = emp.email;
 		this.vendor = emp.vendor;
 		this.leaver = emp.leaver;
+		this.groupName = emp.grp;
+		this.deptName = emp.func;
 	}
 	
-	public void setContainer(OrgContainer oCont) {
-		this.cid =  oCont.getId();
-		this.deptName =  oCont.getDeptName();
-		this.groupName = oCont.getGroupName();
-		this.teamName = oCont.getTeamName();
-	}
+//	public void setContainer(OrgContainer oCont) {
+//	//	this.cid =  oCont.getId();
+//		this.deptName =  oCont.getDeptName();
+//		this.groupName = oCont.getGroupName();
+//		this.teamName = oCont.getTeamName();
+//	}
 	
 	public void setOrgViewItem(OrgViewItem ovi) {
 		this.role = ovi.getRole();
@@ -273,12 +305,7 @@ public class WebEmployeeView {
 	public void setVendor(String vendor) {
 		this.vendor = vendor;
 	}
-	public long getCid() {
-		return cid;
-	}
-	public void setCid(long cid) {
-		this.cid = cid;
-	}
+
 	public String getDeptName() {
 		return deptName;
 	}
@@ -291,12 +318,6 @@ public class WebEmployeeView {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
-	public String getTeamName() {
-		return teamName;
-	}
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
 
 	public Boolean getLeaver() {
 		return leaver;
@@ -304,6 +325,14 @@ public class WebEmployeeView {
 
 	public void setLeaver(Boolean leaver) {
 		this.leaver = leaver;
+	}
+
+	public List<Long> getCids() {
+		return cids;
+	}
+
+	public void setCids(List<Long> cids) {
+		this.cids = cids;
 	}
 
 

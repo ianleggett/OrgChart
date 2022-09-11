@@ -4,9 +4,8 @@ public class WebUpdateContainer {
 	
     private long id;
     String viewName;
-    String deptName;
-	String groupName;
 	String teamName;
+	String teamDesc;
 	
 	long count;
 	String urltag;
@@ -15,14 +14,13 @@ public class WebUpdateContainer {
 	public WebUpdateContainer() {
 		super();
 	}
-	public WebUpdateContainer(long id, String viewName, String deptName, String groupName, String teamName, long count,
+	public WebUpdateContainer(long id, String viewName, String teamName, String teamDesc, long count,
 			String urltag) {
 		super();
 		this.id = id;
 		this.viewName = viewName;
-		this.deptName = deptName;
-		this.groupName = groupName;
 		this.teamName = teamName;
+		this.teamDesc = teamDesc;
 		this.count = count;
 		this.urltag = urltag;
 	}
@@ -50,28 +48,24 @@ public class WebUpdateContainer {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String getDeptName() {
-		return deptName;
-	}
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
-	}
-	public String getGroupName() {
-		return groupName;
-	}
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
 	public String getTeamName() {
 		return teamName;
 	}
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
 	}
+	
+	public String getTeamDesc() {
+		return teamDesc;
+	}
+	public void setTeamDesc(String teamDesc) {
+		this.teamDesc = teamDesc;
+	}
 	@Override
 	public String toString() {
-		return "WebUpdateContainer [id=" + id + ", viewName=" + viewName + ", deptName=" + deptName + ", groupName="
-				+ groupName + ", teamName=" + teamName + ", count=" + count + ", urltag=" + urltag + "]";
+		return "WebUpdateContainer [id=" + id + ", viewName=" + viewName + ", teamName=" + teamName + ", teamDesc="
+				+ teamDesc + ", count=" + count + ", urltag=" + urltag + "]";
 	}
+
 	
 }

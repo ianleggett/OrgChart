@@ -17,6 +17,7 @@ import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 
+import webtool.pojo.TeamCSV;
 import webtool.pojo.UserInfo;
 import webtool.utils.CoreDAO;
 import webtool.utils.ThreadedQueueProcessor;
@@ -128,10 +129,16 @@ class TestStrPair {
 		}
 		return false;
 	}
+
+	@Test
+	void TestGroupSplit() {
+		List<String> str = TeamCSV.getTeams("one,two;three/four");
+		log.info(str);
+	}
+
 	
 	@Test
 	void TestStringSplit() {
-		
 		assertEquals(matchByStringSliced("valuations","valuations/hydro"),true);
 		assertEquals(matchByStringSliced("valuations","hydro/valuations"),true);
 		assertNotEquals(matchByStringSliced("valuations","hydro/valuations"), false );

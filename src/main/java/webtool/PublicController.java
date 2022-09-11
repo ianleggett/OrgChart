@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -35,6 +38,7 @@ import webtool.pojo.RespStatus;
 import webtool.pojo.TableData;
 import webtool.pojo.UserAndRole;
 import webtool.pojo.ViewByType;
+import webtool.pojo.WebEmployeeTeams;
 import webtool.pojo.WebEmployeeView;
 import webtool.pojo.WebStatusUpdate;
 import webtool.pojo.WebUpdateContainer;
@@ -48,7 +52,7 @@ import webtool.utils.CoreDAO;
 public class PublicController {
 
 	public static String SESS_VIEW = "session_view";
-	public static String SESS_DEPT = "session_dept";
+	public static String SESS_TEAMLST = "session_teamlist";
 	
 	
 	static Logger log = Logger.getLogger(PublicController.class);
@@ -175,15 +179,15 @@ public class PublicController {
 		return res;
 	}
 	
-	private void setSessionDetails(HttpServletRequest request,ModelAndView mv,String vStr, String vDept) {
+	private void setSessionDetails(HttpServletRequest request,ModelAndView mv,String vStr, String vTeamList) {
 		final Object sessview = request.getSession().getAttribute(SESS_VIEW);		
 		final String view = getStrSetting(vStr,sessview,CoreDAO.DEFAULT_VIEW);
 		request.getSession().setAttribute(SESS_VIEW, view);
-		final Object sessdep = request.getSession().getAttribute(SESS_DEPT);
-		final String dept = getStrSetting(vDept,sessdep,CoreDAO.DEFAULT_DEPT);
-		request.getSession().setAttribute(SESS_DEPT, dept);
+		final Object sessdep = request.getSession().getAttribute(SESS_TEAMLST);
+		final String dept = getStrSetting(vTeamList,sessdep,CoreDAO.DEFAULT_DEPT);
+		request.getSession().setAttribute(SESS_TEAMLST, dept);
 		mv.addObject("view",view);
-		mv.addObject("dept",dept);		
+		mv.addObject("teamlist",dept);		
 	}
 	
 	@RequestMapping(value = "/staff")
@@ -207,9 +211,9 @@ public class PublicController {
 	
 	@RequestMapping(value = "/diag")
 	public ModelAndView diag( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName,
-			@RequestParam(value = "d", required = false) String dept) {		
+			@RequestParam(value = "d", required = false) String teamList) {		
 		ModelAndView mv = new ModelAndView("diag");		
-		setSessionDetails(request,mv,viewName,dept);		
+		setSessionDetails(request,mv,viewName,teamList);		
 		return mv;
 	}
 	
@@ -237,24 +241,25 @@ public class PublicController {
 	@RequestMapping(value = "/orgdata_gojs.json", method = RequestMethod.GET)
 	@ResponseBody
 	public GoJSData getGoJSData(@RequestParam(name = "v",required = true) String viewName, 
-								@RequestParam(name = "d",required = false) String dept,
+								@RequestParam(name = "d",required = false) String teamListStr,
 								@RequestParam(name = "l",required = false) String linksStr) {
 		final boolean links = linksStr!=null ? true : false;
 		final boolean leavers = false;
-		return coreDAO.genModelGoJS(viewName,dept, links,leavers, ViewByType.ViewByTeam);	
+		List<String> teamlList = (teamListStr == null) ? new ArrayList<String>() : Arrays.asList( teamListStr.split(",") );
+		return coreDAO.genModelGoJS(viewName, teamlList, links,leavers, ViewByType.ViewByTeam);	
 	}
 	
 	@RequestMapping(value = "/containerdata.json", method = RequestMethod.GET)
 	@ResponseBody
 	public TableData<WebUpdateContainer> getContainers(@RequestParam(name = "v",required = true) String viewName) {
-		return new TableData<WebUpdateContainer>(coreDAO.getContainers(viewName,ViewByType.ViewByTeam));
+		return new TableData<WebUpdateContainer>(coreDAO.getContainers(viewName));
 	}
 	
 	@RequestMapping(value = "/containerAggData.json", method = RequestMethod.GET)
 	@ResponseBody
-	public AggContList getAggContainerData(HttpServletRequest request, @RequestParam(name = "v",required = true) String viewName,@RequestParam(name = "viewType",required = true) String viewtype) {
+	public List<OrgContainer> getAggContainerData(HttpServletRequest request, @RequestParam(name = "v",required = true) String viewName) {
 		
-		return coreDAO.getAggContainerData(viewName,ViewByType.valueOf(viewtype)/*ViewByType.ViewByTeam*/);
+		return coreDAO.getAggContainerData(viewName);
 	}
 	
 	
@@ -266,15 +271,16 @@ public class PublicController {
 
 	@RequestMapping(value = "/staffdata.json", method = RequestMethod.GET)
 	@ResponseBody
-	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName, @RequestParam(name = "d",required = false) String dept) {
+	public TableData<WebEmployeeView> getStaffData(@RequestParam(name = "v",required = true) String viewName) {
 		final boolean leavers = false;
-		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,dept,leavers,ViewByType.ViewByTeam));
+		List<String> teamlList = new ArrayList<String>();
+		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,teamlList,leavers,ViewByType.ViewByTeam));
 	}
 
 	@RequestMapping(value = "/updateStaff.json", method = RequestMethod.POST, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
-	public RespStatus updateStaff(@RequestBody WebEmployeeView postData) {
+	public RespStatus updateStaff(@RequestBody WebEmployeeTeams postData) {
 		log.info("updateStaff : " + postData);
 		return coreDAO.updateStaffContainer(postData);
 	}

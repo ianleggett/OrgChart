@@ -19,102 +19,58 @@
 		  console.log(`m[${key}] = ${value}`);
 	}
 	
-	function refreshView(){
-		 //location.reload();
+	function refreshView(){		 
 		 table.ajax.reload();
 	}
 	
-	function resetJobs(targetcombo){
-		var tcombo = "#"+targetcombo;
-		$( tcombo ).empty();
-		$( "<option>" ).attr("value","0").html("=select=").appendTo( tcombo );	
-	}
-	
-	function setContainerItems(grplst,targetcombo){
-		var tcombo = "#"+targetcombo;		
-		$( tcombo ).empty();
-		$( "<option>" ).attr("value","0").html("=select=").appendTo( tcombo );	
-		$.each( grplst, function( i, item ) {		
-			$(tcombo).append('<option>'+item+'</option>');
-		 });		
-	}
-
 /**	
  *    team aligned
  */
-	function setUpJobsByTeam(){				
-		setContainerItems(Object.keys(contData),"teamName");	
-		$('#teamName').change(function(e) {			
-		    var val = $('#teamName').val();		  
-			resetJobs('groupName');
-			resetJobs('deptName'); 
-			tempDept = val;
-			setContainerItems(Object.keys(contData[tempDept]),"groupName");
-		});
-
-		$('#groupName').change(function(e) {		
-		    var val = $('#groupName').val();
-		    resetJobs('deptName'); 
-		    tempGroup = val;
-		    console.log("groupChange "+val)
-		    console.log(JSON.stringify(contData[tempDept][tempGroup]))
-		    setContainerItems(contData[tempDept][tempGroup],"deptName");
-		});
-		
-		$('#deptName').change(function(e) {		
-		    var val = $('#deptName').val();		    
-		});
-	}
-
-
-	/**	
-	 *    Dept aligned
-	 */	
-	function setUpJobsByDept(){				
-		setContainerItems(Object.keys(contData),"deptName");			
-		$('#deptName').change(function(e) {			
-		    var val = $('#deptName').val();		  
-			resetJobs('groupName');
-			resetJobs('teamName'); 
-			tempDept = val;
-			setContainerItems(Object.keys(contData[tempDept]),"groupName");
-		});
-		$('#groupName').change(function(e) {		
-		    var val = $('#groupName').val();
-		    resetJobs('teamName'); 
-		    tempGroup = val;
-		    console.log("groupChange "+val)
-		    console.log(JSON.stringify(contData[tempDept][tempGroup]))
-		    setContainerItems(contData[tempDept][tempGroup],"teamName");
-		});	
-		$('#teamName').change(function(e) {		
-		    var val = $('#teamName').val();
+	function setUpJobsByTeam(teamsSelected){						
+		var tComponent = "#teamTable";
+		$( tComponent ).empty();			
+		$.each( contData, function( i, item ) {
+			var sel = teamsSelected.includes(item.teamName) ? 'checked' : '';
+			$(tComponent).append(
+					'<tr><td align="right"><div class="col"><input class="form-check-input" type="checkbox" id="cid-'+item.id+'" value="'+item.id+'" '+sel+'></div></td>'+
+					'<td><div class="col"><label class="form-check-label">'+
+					item.teamName
+				    + '</label></div></td></tr>'
+				    );					
 		});
 	}
 	
-	function populateTable( inum ){
+	function populateTable( inum , rowidx){
 		$('#inum').val(inum);
-		$('#cid').val();
-		//$('#deptName').val(container.deptName);
-		//$('#groupName').val(container.groupName);
-		//$('#teamName').val(container.teamName);				
+		$('#cid').val();	
+		setUpJobsByTeam(table.row(rowidx).data().teams);
+		console.log(JSON.stringify(table.row(rowidx).data().teams));
 	}
 	
-	function showContainerEdit(inum) {
+	function showContainerEdit(inum,rowidx) {
 		//console.log(JSON.stringify(data));
-		populateTable(inum)
+		populateTable(inum,rowidx)
 		$('#editCode').modal('show');		
 	}
 	function cancel() {
 		$('#editCode').modal('hide');		
 	}
-	function doChanges(){		
-		var attrib = {inum:'nocheck', descr: 'nocheck',deptName:'string', groupName:'string', teamName:'string'}		
+	
+	function doChanges(){
+		var ids = [];
+		// find all 'cid-xxx' collect all the checked and post it
+		$.each( contData, function( i, item ) {
+			if ( $('#cid-'+item.id).prop('checked') ){			
+				ids.push(item.id);
+			}
+		});
+				
+		var attrib = {inum:'nocheck'}		
 		var postObject = validateForm(attrib);	
 		
 		const URL_TARGET = 'updateStaff.json';
-				
-		postObject.descr = '${view}';
+		postObject.cids = ids;		
+		postObject.view = '${view}';
 		
 		console.log(JSON.stringify(postObject));	
 			
@@ -144,6 +100,7 @@
 	    }else{
 	    	console.log('Erros found, not posting..')
 	    }	
+		
 	}
 	
 	
@@ -175,9 +132,8 @@
 
 		setTable();
 
-		$.getJSON('containerAggData.json?v=${view}&viewType=ViewByTeam', function(data) {								
-			contData = data.strMapList;
-			setUpJobsByTeam();
+		$.getJSON('containerAggData.json?v=${view}', function(data) {								
+			contData = data;			
 		});	
 		
 	}	
@@ -209,12 +165,26 @@
 	    );
 	}
 	
+	function teamRender(data, type, row, meta){
+		//console.log(JSON.stringify(row.teams));
+		var str ='<a href="#" onclick="showContainerEdit(\''
+				+ row.inum
+				+ '\',\''+meta.row+'\')" >'														
+				+ '<i class="far fa-edit"></i></a>';	
+		
+		//str += '<a href="diag?v=${view}&d='+row.teams+'" rel="noopener noreferrer" target="_blank" ><i class="fas fa-users"></i></a>';
+		
+		return str;
+	}
+	
 	function deptTeamRender(data, type, row, meta){
-		//console.log(JSON.stringify(row.inum));
-		return '<a href="#" onclick="showContainerEdit(\''
-		+ row.inum
-		+ '\',\''+row.containerId+'\')" >'														
-		+ '<i class="far fa-edit"></i></a> <a href="diag?v=${view}&d='+data+'" rel="noopener noreferrer" target="_blank" >' + data + '</a>';
+		//console.log(JSON.stringify(row.teams));
+		var str = "<table>";		
+		row.teams.forEach( ele =>{
+			str += '<tr><td><a href="diag?v=${view}&d='+row.teams+'" rel="noopener noreferrer" target="_blank" ><i class="fas fa-users"></i></a></td>';
+			str += '<td><a href="diag?v=${view}&d='+ele+'" rel="noopener noreferrer" target="_blank" > ' + ele + '</a></td></tr>';	
+		});
+		return str + "</table>";
 	}
 	
 	function setTable(tabledata) {
@@ -248,6 +218,7 @@
 									{
 										data : "lastName"
 									},
+									{ data : null, render : teamRender },
 									{
 										data : "teamName",
 										render : deptTeamRender
@@ -308,6 +279,7 @@
 			<th>inum</th>
 			<th>firstName</th>
 			<th>lastName</th>
+			<th></th>
 			<th>Team</th>
 			<th>Grp</th>
 			<th>Dept</th>
@@ -351,29 +323,9 @@
         <button type="button" class="btn btn-danger" onclick="cancel()" data-dismiss="modal">&times; Cancel</button>
         <button type="button" class="btn btn-success" onclick="doChanges()">Update</button>         
       </div>
-     <div class="modal-body">
-     	 <table class="table table-striped table-bordered">
-     	<tr>		
-			<td align="right"><div class="col">Team</div></td>
-			<td> <div class="col">
-			 <select id="teamName" class="autocomplete">
-  			</select>
-			</div></td>								
-		</tr>
-		<tr>		
-			<td align="right"><div class="col">Group</div></td>
-			<td> <div class="col">
-			 <select id="groupName" class="autocomplete">
-  			</select>				
-			</div></td>	
-		</tr>
-		<tr>		
-			<td align="right"><div class="col">Dept</div></td>
-			<td> <div class="col">			
-			<select id="deptName" class="autocomplete">
-  			</select>
-			</div></td>	
-		</tr>
+     <div class="modal-body" style="height: 600px; overflow-y: auto;">
+     	 <table class="table table-striped table-bordered" id="teamTable">	
+     	 
 		</table>    			
 		
         <table id="statustable"></table>

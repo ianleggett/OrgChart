@@ -16,9 +16,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import webtool.utils.CoreDAO;
+
 @Entity
 @Table(name = "ocontainer", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "viewName", "deptName", "groupName", "teamName" }) })
+		@UniqueConstraint(columnNames = { "viewName", "teamName" }) })
 public class OrgContainer {
 
 	@Id
@@ -28,60 +30,36 @@ public class OrgContainer {
 	private long id;
 
 	String viewName;
-	String deptName;
-	String groupName;
 	String teamName;
+	String teamDesc;
 
-//	@OneToMany(targetEntity=Employee.class, fetch=FetchType.EAGER,cascade = CascadeType.ALL)		
-//	List<Employee> ipeople = new ArrayList<Employee>();
-//
-//	public boolean addEmployee(Employee emp) {
-//		for(Employee e : ipeople) {
-//			if (e.getInum().equalsIgnoreCase(emp.getInum()))
-//				return false; // already added
-//		}
-//		ipeople.add( emp );
-//		return true;
-//	}
 	public OrgContainer(WebUpdateContainer upd) {
 		super();
 		this.id = upd.getId();
 		this.viewName = upd.getViewName();
-		this.deptName = upd.getDeptName();
-		this.groupName = upd.getGroupName();
 		this.teamName = upd.getTeamName();
-
+		this.teamDesc = upd.getTeamDesc();
 	}
 
 	public boolean updateDetails(WebUpdateContainer upd) {
 		if (this.id == upd.getId()) {
 			this.viewName = upd.getViewName();
-			this.deptName = upd.getDeptName();
-			this.groupName = upd.getGroupName();
 			this.teamName = upd.getTeamName();
+			this.teamDesc = upd.getTeamDesc();
 			return true;
 		}
 		return false;
-	}
-
-	public static String getFQDN(String dept, String group, String team) {
-		return dept + "_" + group + "_" + team;
-	}
-
-	public String getFQDN() {
-		return getFQDN(getDeptName(), getGroupName(), getTeamName());
 	}
 
 	public OrgContainer() {
 		super();
 	}
 
-	public OrgContainer(String viewName, String deptName, String groupName, String teamName) {
+	public OrgContainer(String viewName, String teamName) {
 		super();
 		this.viewName = viewName;
-		this.deptName = deptName;
-		this.groupName = groupName;
 		this.teamName = teamName;
+		this.teamDesc = "";
 	}
 
 	public long getId() {
@@ -92,22 +70,6 @@ public class OrgContainer {
 		this.id = id;
 	}
 
-	public String getDeptName() {
-		return deptName;
-	}
-
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
-	}
-
-	public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
-
 	public String getTeamName() {
 		return teamName;
 	}
@@ -116,12 +78,21 @@ public class OrgContainer {
 		this.teamName = teamName;
 	}
 
-//	public List<Employee> getIpeople() {
-//		return ipeople;
-//	}
-//
-//	public void setIpeople(List<Employee> ipeople) {
-//		this.ipeople = ipeople;
-//	}
+	public String getViewName() {
+		return viewName;
+	}
+
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+
+	public String getTeamDesc() {
+		return teamDesc;
+	}
+
+	public void setTeamDesc(String teamDesc) {
+		this.teamDesc = teamDesc;
+	}
+
 
 }

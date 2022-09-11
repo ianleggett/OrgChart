@@ -34,8 +34,8 @@ public class Person {
 	String geoReg;
 	String email;
 	
-//	String dept;
-//	String teamName;
+	String group;
+	String func;
 	String vendor;
 	
 	String mgrName;
@@ -80,6 +80,17 @@ public class Person {
 		per.setMgrName(rec.get("Mgr Name"));
 		per.setMgriNum(rec.get("Mgr ID"));
 		
+		if (rec.isMapped("group")) {	
+			per.setGroup(rec.get("group"));
+		}else {
+			per.setGroup(rec.get("Team"));
+		}
+
+		if (rec.isMapped("dept")) {	
+			per.setFunc(rec.get("dept"));
+		}else {		
+			per.setFunc(rec.get("Function"));
+		}
 		return per;
 	}
 	
@@ -104,7 +115,8 @@ public class Person {
 		per.setVendor(BLANK);
 		per.setMgrName(BLANK);
 		per.setMgriNum(BLANK);
-		
+		per.setGroup(BLANK);
+		per.setFunc(BLANK);
 		return per;
 	}
 	
@@ -255,6 +267,22 @@ public class Person {
 	}
 	public void setVendor(String vendor) {
 		this.vendor = vendor;
+	}
+
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	public String getFunc() {
+		return func;
+	}
+
+	public void setFunc(String func) {
+		this.func = func;
 	}
 
 	@Override

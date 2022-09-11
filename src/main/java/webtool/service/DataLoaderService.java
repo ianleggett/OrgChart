@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.ImmutableList;
 
 import webtool.pojo.Employee;
-import webtool.pojo.GroupCSV;
+import webtool.pojo.TeamCSV;
 import webtool.pojo.OrgContainer;
 import webtool.pojo.OrgView;
 import webtool.pojo.OrgViewItem;
@@ -55,17 +55,16 @@ public class DataLoaderService {
 	static final String GRP_FILE = "/home/ian/Downloads/PDT-default-group.csv";
 	// static final String FILE = "/Users/i34976/Downloads/PDT_test.csv";
 
-	public static final List<String> STAFF_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr", "Descr",
-			"Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name",
-			"Mgr ID");
-	public static final List<String> GROUP_HDR = List.of("ID", "group", "dept", "team-name");
+	public static final List<String> STAFF_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr",
+			"Descr", "Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor",
+			"Mgr Name", "Mgr ID");
+	public static final List<String> GROUP_HDR = List.of("ID", "team-name");
 	// Team by org chart (level1) ,Department (Level 2), Team Name (Level 3)
 
-	public static final List<String> EXPORT_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr", "Descr",
-			"Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor", "Mgr Name",
-			"Mgr ID", "group", "dept", "team-name");
-	
-	
+	public static final List<String> EXPORT_HDR = List.of("Leaver/Active", "ID", "First Name", "Last", "City Descr",
+			"Descr", "Contract Type", "Job Category", "Job Title", "Service Dt", "Geo Reg", "Email ID", "Vendor",
+			"Mgr Name", "Mgr ID", "group", "dept", "team-name");
+
 	boolean inprogress = false;
 	StringBuilder sb = new StringBuilder();
 
@@ -235,9 +234,12 @@ public class DataLoaderService {
 
 			for (CSVRecord rec : records) {
 				Person per = Person.load(rec);
-				perList.add(per);
-				Employee emp = addOrUpdateEmployee(per);
-				empMap.put(emp.getInum(), emp);
+				// dont add leavers
+				if (!per.isLeaver()) {
+					perList.add(per);
+					Employee emp = addOrUpdateEmployee(per);
+					empMap.put(emp.getInum(), emp);
+			   }
 			}
 
 			// need to create both container and link info
@@ -247,23 +249,23 @@ public class DataLoaderService {
 				final Employee empTo = empMap.get(per.getMgriNum());
 				final Employee empFrom = empMap.get(per.getiNum());
 
-				if ((empFrom != null) && (empTo != null))
-					if (!empFrom.getInum().isEmpty() && !empTo.getInum().isEmpty()) {
-						OrgViewItem saveOrgItem;
-						// find this employee entry for this view (if any)
-						Optional<OrgViewItem> oviOpt = orgViewItemRepository.findByviewNameAndiNum(CoreDAO.DEFAULT_VIEW,
-								per.getiNum());
-						if (!oviOpt.isPresent()) {
-							// create
-							saveOrgItem = orgViewItemRepository.save(new OrgViewItem(CoreDAO.DEFAULT_VIEW,
-									per.getiNum(), "reportsTo", per.getMgriNum()));
-						} else {
-							saveOrgItem = oviOpt.get();
-							// update
-							saveOrgItem.setLinkiNum(per.getMgriNum());
-							saveOrgItem = orgViewItemRepository.save(saveOrgItem);
-						}
-					}
+//				if ((empFrom != null) && (empTo != null))
+//					if (!empFrom.getInum().isEmpty() && !empTo.getInum().isEmpty()) {
+//						OrgViewItem saveOrgItem;
+//						// find this employee entry for this view (if any)
+//						List<OrgViewItem> oviList = orgViewItemRepository.findByviewNameAndiNum(CoreDAO.DEFAULT_VIEW,
+//								per.getiNum());
+//						if (!oviOpt.isPresent()) {
+//							// create
+//							saveOrgItem = orgViewItemRepository.save(new OrgViewItem(CoreDAO.DEFAULT_VIEW,
+//									per.getiNum(), "reportsTo", per.getMgriNum()));
+//						} else {
+//							saveOrgItem = oviOpt.get();
+//							// update
+//							saveOrgItem.setLinkiNum(per.getMgriNum());
+//							saveOrgItem = orgViewItemRepository.save(saveOrgItem);
+//						}
+//					}
 			}
 			return perList.size();
 		} catch (Exception e) {
@@ -291,47 +293,50 @@ public class DataLoaderService {
 
 			List<OrgContainer> orgContainers = orgContainerRepository.findByViewName(viewname);
 			Map<String, OrgContainer> contMap = orgContainers.stream()
-					.collect(Collectors.toMap(OrgContainer::getFQDN, it -> it));
+					.collect(Collectors.toMap(OrgContainer::getTeamName, it -> it));
+
+			// get th complete list of emps
+			List<Employee> empList = ImmutableList.copyOf(employeeRepository.findAll());
+			Map<String, Employee> empMap = empList.stream().collect(Collectors.toMap(Employee::getInum, it -> it));
 
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 			log.info("reading group data...");
 			long itemCount = 0;
 			for (CSVRecord rec : records) {
-				GroupCSV grpItem = GroupCSV.load(rec);
-				OrgContainer oc = contMap.get(grpItem.getFQDN());
-				if (oc == null) {
-					// category does not exist
-					oc = new OrgContainer(viewname, grpItem.getDept(), grpItem.getGroup(), grpItem.getTeamName());
-					oc = orgContainerRepository.save(oc);
-					contMap.put(oc.getFQDN(), oc);
-					// defaultView = orgViewRepository.save(defaultView);
-				} else {
-					log.info("Found " + grpItem.getFQDN());
-				}
-				itemCount++;
-				// get th complete list of emps
-				List<Employee> empList = ImmutableList.copyOf(employeeRepository.findAll());
-				Map<String, Employee> empMap = empList.stream().collect(Collectors.toMap(Employee::getInum, it -> it));
-
+				TeamCSV grpItem = TeamCSV.load(rec);
 				// is this emp already in the category?
 				Employee emp = empMap.get(grpItem.getiNum());
+				if (emp!=null) {
+				for (String tm : grpItem.getTeamName()) {
+					// find the fun/grp & team exists in container ??
+					String fqdn = tm.isBlank() ? "-not-set-" : tm.trim();
+					// does this container exist??
+					OrgContainer oc = contMap.get(fqdn);
+					if (oc == null) {
+						oc = orgContainerRepository.save(new OrgContainer(viewname, fqdn));
+						contMap.put(fqdn,oc);
+					}
 
-				Optional<OrgViewItem> oviOpt = orgViewItemRepository.findByviewNameAndiNum(viewname, grpItem.getiNum());
-				OrgViewItem saveOrgItem;
-				if (!oviOpt.isPresent()) {
-					// create
-					saveOrgItem = orgViewItemRepository.save(new OrgViewItem(viewname, grpItem.getiNum(), oc.getId()));
-				} else {
-					saveOrgItem = oviOpt.get();
-					// update
-					saveOrgItem.setContainerId(oc.getId());
-					saveOrgItem = orgViewItemRepository.save(saveOrgItem);
+					List<OrgViewItem> oviList = orgViewItemRepository.findByviewNameAndiNum(viewname,
+							grpItem.getiNum());
+
+					// remove existing mappings? or just add to them???
+					boolean alreadyInContainer = false;
+					for (OrgViewItem iter : oviList) {
+						if (iter.getContainerId() == oc.getId())
+							alreadyInContainer = true;
+					}
+					if (!alreadyInContainer) {
+						OrgViewItem saveOrgItem = orgViewItemRepository
+								.save(new OrgViewItem(viewname, grpItem.getiNum(), oc.getId()));
+						saveOrgItem.setContainerId(oc.getId());
+						saveOrgItem = orgViewItemRepository.save(saveOrgItem);
+						log.info("Adding " + emp.getInum());
+					}
 				}
-
-				log.info("Adding " + emp.getInum());
-
+				}
+				//orgViewRepository.save(thisView);
 			}
-			orgViewRepository.save(thisView);
 			log.info("Finished");
 			return itemCount;
 		} catch (Exception e) {

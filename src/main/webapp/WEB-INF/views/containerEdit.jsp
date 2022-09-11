@@ -72,17 +72,15 @@ function hide(){
 
 function populateTable( container ){
 	
-	$('#cid').val(container.id);
-	$('#deptName').val(container.deptName);
-	$('#groupName').val(container.groupName);
+	$('#cid').val(container.id);	
+	$('#teamDesc').val(container.teamDesc);
 	$('#teamName').val(container.teamName);		
 	
 }
 
 function addContainer(){
 	$('#cid').val(0);
-	$('#deptName').val('');
-	$('#groupName').val('');
+	$('#teamDesc').val('');
 	$('#teamName').val('');		
 	$('#editCode').modal('show');
 	
@@ -97,7 +95,7 @@ function editContainer(taskid){
  
 function doChanges(){
 	
-	var attrib = {cid:'nocheck', viewName: 'nocheck',deptName:'string', groupName:'string', teamName:'string'}		
+	var attrib = {cid:'nocheck', viewName: 'nocheck',teamDesc:'string', teamName:'string'}		
 	var postObject = validateForm(attrib);	
 	
 	const URL_TARGET = postObject.cid == 0 ? 'addContainer.json' : 'updateContainer.json';
@@ -157,8 +155,7 @@ function initTable() {
 				data : "teamName",
 				render : deptTeamRender
 			},
-            { "data": "groupName" },
-            { "data": "deptName" },  
+            { "data": "teamDesc" },  
             { "data": "count" },
         ],
         order: [[1, 'asc']]
@@ -192,8 +189,7 @@ function initTable() {
             <tr>
                 <th></th>  
                 <th>Team</th> 
-				<th>Group</th>                            
-                <th>Dept</th>
+				<th>Description</th>                            
                 <th>count</th>                
             </tr>
         </thead>
@@ -218,12 +214,8 @@ function initTable() {
 			<td> <div class="col"><input type="text" class="form-control" id="teamName" placeholder="team name"></div></td>								
 		</tr>
 		<tr>		
-			<td align="right"><div class="col">Group</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="groupName" placeholder="group name"></div></td>	
-		</tr>
-		<tr>		
-			<td align="right"><div class="col">Dept</div></td>
-			<td> <div class="col"><input type="text" class="form-control" id="deptName" placeholder="dept name"></div></td>	
+			<td align="right"><div class="col">Description</div></td>
+			<td> <div class="col"><input type="text" class="form-control" id="teamDesc" placeholder="description"></div></td>	
 		</tr>		
 		</table>    			        
       </div>     
