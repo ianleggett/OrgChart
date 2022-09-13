@@ -308,7 +308,7 @@ public class CoreDAO {
 		
 		final List<WebUpdateContainer> emps = orgContainerRepository
 				.findByViewTeamSorted(viewName).stream().map(orgCont -> new WebUpdateContainer(orgCont.getId(),
-						viewName, orgCont.getTeamName(),orgCont.getTeamDesc(), ovCidMap.get( orgCont.getId()).getCnt() , ""))
+						viewName, orgCont.getTeamName(),orgCont.getTeamDesc(), ovCidMap.get( orgCont.getId()) != null ? ovCidMap.get( orgCont.getId()).getCnt() : 0 , ""))
 				.collect(Collectors.toList());
 		return emps;
 
