@@ -312,33 +312,64 @@ public class DataLoaderService {
 				// is this emp already in the category?
 				Employee emp = empMap.get(grpItem.getiNum());
 				if (emp!=null) {
-				for (String tm : grpItem.getTeamName()) {
-					// find the fun/grp & team exists in container ??
-					String fqdn = tm.isBlank() ? "-not-set-" : tm.trim();
-					// does this container exist??
-					OrgContainer oc = contMap.get(fqdn);
-					if (oc == null) {
-						oc = orgContainerRepository.save(new OrgContainer(viewname, fqdn));
-						contMap.put(fqdn,oc);
-					}
-
-					List<OrgViewItem> oviList = orgViewItemRepository.findByviewNameAndiNum(viewname,
+					
+					List<OrgViewItem> ovItemList = orgViewItemRepository.findByviewNameAndiNum(viewname,
 							grpItem.getiNum());
-
-					// remove existing mappings? or just add to them???
-					boolean alreadyInContainer = false;
-					for (OrgViewItem iter : oviList) {
-						if (iter.getContainerId() == oc.getId())
-							alreadyInContainer = true;
+					Map<Long,OrgViewItem> ovContainerMap = ovItemList.stream().collect(Collectors.toMap(OrgViewItem::getContainerId, it -> it));
+					Map<Long,Long> ovCidToAddMap = new HashMap<Long,Long>();							
+					
+					for (String tm : grpItem.getTeamName()) {
+						// find the fun/grp & team exists in container ??
+						String fqdn = tm.isBlank() ? "-not-set-" : tm.trim();
+						// does this container exist??
+						OrgContainer oc = contMap.get(fqdn);
+						if (oc == null) {
+							oc = orgContainerRepository.save(new OrgContainer(viewname, fqdn));
+							contMap.put(fqdn,oc);
+						}
+						ovCidToAddMap.put(oc.getId(),oc.getId());
 					}
-					if (!alreadyInContainer) {
-						OrgViewItem saveOrgItem = orgViewItemRepository
-								.save(new OrgViewItem(viewname, grpItem.getiNum(), oc.getId()));
-						saveOrgItem.setContainerId(oc.getId());
-						saveOrgItem = orgViewItemRepository.save(saveOrgItem);
-						log.info("Adding " + emp.getInum());
+					
+					// remove items not in the new request
+					for(OrgViewItem ovi : ovContainerMap.values()) {
+						if (!ovCidToAddMap.containsKey(ovi.getContainerId())) {
+							// need to delete
+							orgViewItemRepository.deleteById(ovi.getId());
+						}
 					}
-				}
+					
+					for (Long cid : ovCidToAddMap.keySet()) {		
+						// 1. find container id
+						Optional<OrgContainer> orgContOpt = orgContainerRepository.findById(viewname, cid);
+						if (orgContOpt.isPresent()) {
+							OrgContainer oc = orgContOpt.get();
+							// remove existing mappings? or just add to them???
+							if ( !ovContainerMap.containsKey(oc.getId()) ) {
+								OrgViewItem saveOrgItem = orgViewItemRepository.save(new OrgViewItem(viewname,emp.getInum(), orgContOpt.get().getId()));
+								saveOrgItem.setContainerId(oc.getId());
+								saveOrgItem = orgViewItemRepository.save(saveOrgItem);
+								log.info("Adding " + emp.getInum());					
+							}				
+						}else {
+							log.info("container not found !!! should not happen");
+						}
+					}
+					
+//					HERE to sort out
+//					
+//					// remove existing mappings? or just add to them???
+//					boolean alreadyInContainer = false;
+//					for (OrgViewItem iter : ovItemList) {
+//						if (iter.getContainerId() == oc.getId())
+//							alreadyInContainer = true;
+//					}
+//					if (!alreadyInContainer) {
+//						OrgViewItem saveOrgItem = orgViewItemRepository
+//								.save(new OrgViewItem(viewname, grpItem.getiNum(), oc.getId()));
+//						saveOrgItem.setContainerId(oc.getId());
+//						saveOrgItem = orgViewItemRepository.save(saveOrgItem);
+//						log.info("Adding " + emp.getInum());
+//					}				
 				}
 				//orgViewRepository.save(thisView);
 			}
