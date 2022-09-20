@@ -145,7 +145,7 @@
 	        '<tr>' +
 	        '<td>started:</td>' +
 	        '<td>' +
-	        d.started + '('+ d.leaver +')' +
+	        d.started +
  	        '</td>' +
 	        '</tr>' +
 	        '<tr>' +

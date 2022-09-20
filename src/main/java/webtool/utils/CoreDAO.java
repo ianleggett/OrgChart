@@ -205,7 +205,7 @@ public class CoreDAO {
 					}
 				}
 			} else {
-				log.error("empl does not exist " + ovi);
+				// save time log.error("empl does not exist " + ovi);
 			}
 		}
 

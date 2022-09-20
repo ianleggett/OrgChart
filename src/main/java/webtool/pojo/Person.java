@@ -58,7 +58,7 @@ public class Person {
 		per.setLeaver(rec.get(0));
 		per.setiNum(rec.get("ID"));
 		per.setFirstName(rec.get("First Name"));
-		per.setLastName(rec.get("Last"));
+		per.setLastName(rec.get("Last Name"));
 		per.setCity(rec.get("City Descr"));
 		per.setDescr(rec.get("Descr"));
 		
@@ -70,8 +70,9 @@ public class Person {
 //		per.setTeamByOrg(rec.get("Team by org chart (level1)"));
 		
 		
-		//per.setMgr(rec.get("Service Dt"));
-		per.setGeoReg(rec.get("Geo Reg"));
+		//per.setMgr(rec.get("Service Dt"));		
+		per.setGeoReg(rec.get("Geographic Reg"));		
+		
 		per.setEmail(rec.get("Email ID"));
 		per.setLeaver(rec.get("Leaver/Active"));
 //		per.setDept(rec.get("Department (Level 2)"));
