@@ -111,9 +111,9 @@ function emailList(taskid){
 		$('#msgdetails').html('<textarea type="text" rows="20" cols="40" id="emailTA"></textarea><button class="btn btn-primary" onclick="copyText()">Copy text</button>');
 		var str="";
 		emailList.data.forEach(function(item){
-			str += item + ',';
+			str += item + '\t\n';
 		});
-		str=str.slice(0, -1); 
+		//str=str.slice(0, -1); 
 		$('#emailTA').append(str);
 	});	
 	
