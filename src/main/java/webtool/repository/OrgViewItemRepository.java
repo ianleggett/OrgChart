@@ -22,4 +22,8 @@ public interface OrgViewItemRepository extends CrudRepository<OrgViewItem, Long>
 	
 	@Query(value = "select d.container_id AS cid, COUNT(1) as cnt from oviewitem d WHERE d.view_name=:viewname GROUP BY d.container_id",nativeQuery = true)
 	List<Object[]> countContainerUsage(@Param("viewname") String viewname);
+	
+	@Query(value = "select * from oviewitem d WHERE d.view_name=:viewname AND d.container_id in (:cids) ",nativeQuery = true)
+	List<OrgViewItem> findInContainer(@Param("viewname") String viewname,@Param("cids") String cids);
+	
 }

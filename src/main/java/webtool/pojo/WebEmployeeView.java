@@ -121,7 +121,7 @@ public class WebEmployeeView {
 	 */
 	public List<String> getExportValues(){
 		List<String> strList = new ArrayList<String>();
-		strList.add(this.leaver ? "Active" : "Leaver");
+		strList.add(this.leaver ? "Leaver" : "Active");
 		strList.add(this.inum);
 		strList.add(this.firstName);
 		strList.add(this.lastName);

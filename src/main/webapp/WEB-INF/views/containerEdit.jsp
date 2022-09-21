@@ -92,7 +92,35 @@ function editContainer(taskid){
 	$('#editCode').modal('show');
 	populateTable( contMap[ taskid ] );
 }
- 
+
+function copyText(){
+	var emailBox = $('#emailTA'); 
+	emailBox.select();
+	//emailBox.setSelectionRange(0,99999);
+	navigator.clipboard.writeText(emailBox.val());
+	
+}
+
+function emailList(taskid){
+	console.log(taskid);
+	
+	$.getJSON('emaildata.json?v=${view}&cids='+taskid, function(emailList) {		
+		console.log(JSON.stringify(emailList));		
+		$('#msgdialog').modal('show');
+		$('#msgtitle').html('<h3 style="color:white;">Email list</h3>');
+		$('#msgdetails').html('<textarea type="text" rows="20" cols="40" id="emailTA"></textarea><button class="btn btn-primary" onclick="copyText()">Copy text</button>');
+		var str="";
+		emailList.data.forEach(function(item){
+			str += item + ',';
+		});
+		str=str.slice(0, -1); 
+		$('#emailTA').append(str);
+	});	
+	
+
+
+}
+
 function doChanges(){
 	
 	var attrib = {cid:'nocheck', viewName: 'nocheck',teamDesc:'string', teamName:'string'}		
@@ -146,8 +174,9 @@ function initTable() {
         paging 		   : false,
         columns: [  
         	{ "data": null,
-       		 	'render': function (dataIn){              
-       		 	 return '<button class="btn btn-outline-dark" onclick="editContainer('+dataIn.id+')"> <span class="fas fa-user-edit" data-toggle="tooltip" title="edit" style="color:grey;font-size:15px"></span></button>';
+       		 	'render': function (dataIn){ 
+       		 	 return'<button class="btn btn-outline-dark" onclick="editContainer('+dataIn.id+')"> <span class="fas fa-users-cog" data-toggle="tooltip" title="edit" style="color:black;font-size:15px"></span></button>'
+       		 	 + '<button class="btn btn-outline-dark" onclick="emailList('+dataIn.id+')"> <span class="fas fa-envelope" data-toggle="tooltip" title="email list" style="color:gray;font-size:15px"></span></button>';
                   //return '<span onclick="editCust( \''+JSON.stringify(data)+'\' )" class="fas fa-user-edit" data-toggle="tooltip" title="edit"></span>';
                 }
         	},        	

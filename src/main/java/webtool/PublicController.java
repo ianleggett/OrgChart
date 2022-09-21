@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -196,6 +198,12 @@ public class PublicController {
 		setSessionDetails(request,mv,viewName,null);		
 		return mv;
 	}
+	@RequestMapping(value = "/help")
+	public ModelAndView help( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
+		ModelAndView mv = new  ModelAndView("help");
+		setSessionDetails(request,mv,viewName,null);		
+		return mv;
+	}
 	@RequestMapping(value = "/containerEdit")
 	public ModelAndView containers( HttpServletRequest request, @RequestParam(value = "v", required = false) String viewName) {
 		ModelAndView mv = new  ModelAndView("containerEdit");
@@ -277,6 +285,16 @@ public class PublicController {
 		return new TableData<WebEmployeeView>(coreDAO.getViewData(viewName,teamlList,leavers,ViewByType.ViewByTeam));
 	}
 
+
+	@RequestMapping(value = "/emaildata.json", method = RequestMethod.GET)
+	@ResponseBody
+	public TableData<String> getEmailData(@RequestParam(name = "v",required = true) String viewName,
+							   @RequestParam(name = "cids",required = true) String cidStr) {
+		//List<String> teamlList = (cidStr == null) ? new ArrayList<String>() : Arrays.asList( cidStr.split(",") );
+		//List<Long> cidList = teamlList.stream().map(t->Long.parseLong(t)).collect(Collectors.toList());
+		return coreDAO.getEmailData(viewName,cidStr);
+	}		
+			
 	@RequestMapping(value = "/updateStaff.json", method = RequestMethod.POST, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody

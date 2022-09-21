@@ -41,6 +41,7 @@ import webtool.pojo.OrgViewItem;
 import webtool.pojo.Person;
 import webtool.pojo.ProcStatus;
 import webtool.pojo.RespStatus;
+import webtool.pojo.TableData;
 import webtool.pojo.UtilAggCount;
 import webtool.pojo.ViewByType;
 import webtool.pojo.WebEmployeeTeams;
@@ -160,6 +161,12 @@ public class CoreDAO {
 		}
 		return false;
 	}
+	
+	public Map<String, Employee> getEmployeeMap(){
+		List<Employee> emps = ImmutableList.copyOf(employeeRepositiory.findAll());
+		return emps.stream().collect(Collectors.toMap(Employee::getInum, it -> it));
+	}
+	
 	
 	public List<WebEmployeeView> getViewData(String viewName, List<String> teamList, boolean showLeavers, ViewByType vType) {
 
@@ -286,8 +293,26 @@ public class CoreDAO {
 		}
 		
 		return RespStatus.OK;
-		
+	}
 
+	/**
+	 * Generate a list of emails based upon one or more team/container ids
+	 * @param view
+	 * @param cids
+	 * @return
+	 */
+	public TableData<String> getEmailData(String view, String cids){
+		
+		List<String> eList = new ArrayList<String>();
+		// get viewitems for container id
+		Map<String,Employee> empMap = getEmployeeMap();
+		List<OrgViewItem> oviList = orgViewItemRepository.findInContainer( view, cids );		
+		// get inum from viewitems
+		oviList.forEach( ovi -> {
+			Employee emp = empMap.get(ovi.getiNum());
+			if (emp!=null) eList.add( emp.getEmail() );
+		});
+		return new TableData<String>(eList);
 	}
 
 	public List<WebViewUpdate> getViews() {
