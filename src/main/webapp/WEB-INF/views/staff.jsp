@@ -336,19 +336,5 @@
 </div>
 
 
-<!-- footer class="py-4 bg-light mt-auto">
-					  <div class="container-fluid">
-						  <div class="d-flex align-items-center justify-content-between small"> 
-							  <div class="text-muted">(Version <spring:eval expression="@environment.getProperty('website.version')" />) Copyright &copy; Trade Finance tinance.com 2021</div>
-							  <div>
-								  <a href="#">Privacy Policy</a>
-								  &middot;
-								  <a href="#">Terms &amp; Conditions</a>
-							  </div>
-						  </div>
-					  </div>
-				  </footer>
-				  -->
-
 </body>
 </html>

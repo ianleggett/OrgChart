@@ -27,8 +27,6 @@
 
 <script src="/resources/js/orgchartutils.js"></script>
 
-<script src="resources/js/jquery-3.6.0.min.js"></script>
-
 <link
 	href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
 	rel="stylesheet" crossorigin="anonymous" />

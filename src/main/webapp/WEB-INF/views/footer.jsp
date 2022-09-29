@@ -5,8 +5,8 @@
     <div class="modal-content">
                                                                
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header" style="text-align: center;"><img src="/resources/images/tinance3-sm.png" style="width: 250px;" class="d-inline-block align-top" alt="">                                    	
-                                    	<h3 class="text-center font-weight-light my-4">Trade Finance Login</h3>
+                                    <div class="card-header" style="text-align: center;">                                    	
+                                    	<h3 class="text-center font-weight-light my-4">OrgChart Login</h3>
                                     </div>
                                     <div class="card-body">
                                         <form method="POST" name='f' action="login">
@@ -39,7 +39,7 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small"> 
-                            <div class="text-muted">(Version <spring:eval expression="@environment.getProperty('website.version')" />) Copyright &copy; Trade Finance tinance.com 2021</div>
+                            <div class="text-muted">(Version <spring:eval expression="@environment.getProperty('website.version')" />) Copyright &copy; OrgChart 2021</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;

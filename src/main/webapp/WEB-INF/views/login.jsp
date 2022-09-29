@@ -113,7 +113,7 @@ input[type="password"] {
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header" style="text-align: center;"><img src="/resources/images/tinance3-sm.png" style="width: 250px;" class="d-inline-block align-top" alt="">
+                                    <div class="card-header" style="text-align: center;">
                                     	V <spring:eval expression="@environment.getProperty('website.version')" />
                                     	<h3 class="text-center font-weight-light my-4">Login</h3>
                                     </div>
