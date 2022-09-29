@@ -319,9 +319,11 @@
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
     <input type="hidden" id='inum' name="inum" value="not-set" /> 
     <div class="modal-content">
-      <div class="modal-header">      
-        <button type="button" class="btn btn-danger" onclick="cancel()" data-dismiss="modal">&times; Cancel</button>
-        <button type="button" class="btn btn-success" onclick="doChanges()">Update</button>         
+      <div class="modal-header"> 
+       <table width="100%"><tr>
+       <td><button type="button" class="btn btn-danger" onclick="cancel()" data-dismiss="modal">&times; Cancel</button></td>
+       <td align="center"><div>Select which Teams</div></td>
+       <td align="right"><button type="button" class="btn btn-success" onclick="doChanges()">Update</button></td></tr></table>     
       </div>
      <div class="modal-body" style="height: 600px; overflow-y: auto;">
      	 <table class="table table-striped table-bordered" id="teamTable">	
