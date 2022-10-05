@@ -65,35 +65,6 @@ public class ControllerAdmin {
 		// settingsDAO.startStreaming();
 	}
 	
-//	@RequestMapping(value = "/setsystem.json", method = RequestMethod.POST, consumes = {
-//			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
-//	@ResponseBody
-//	public RespStatus setsystem(@RequestBody SystemStatus status) {		
-//		systemStatusService.setStatus(status);
-//		return RespStatus.OK;
-//	}
-//	
-//	@RequestMapping(value = "/getsystem.json", method = RequestMethod.GET)
-//	@ResponseBody
-//	public SystemStatus getsystem() {
-//		return systemStatusService.getSystemStatus();		
-//	}
-//
-//	@RequestMapping(value = "/setsystemmsg.json", method = RequestMethod.POST, consumes = {
-//			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
-//	@ResponseBody
-//	public RespStatus setsystemmsg(@RequestBody SystemMessage sysmsg) {	
-//		log.info("Set message "+sysmsg);
-//		systemStatusService.setNewMessage(sysmsg.getMsg());
-//		return RespStatus.OK;
-//	}
-//	
-//	@RequestMapping(value = "/getsystemmsg.json", method = RequestMethod.GET)
-//	@ResponseBody
-//	public SystemMessage getsystemmsg() {
-//		return systemStatusService.getMessage();		
-//	}
-
 	
 	@RequestMapping(value = "/")
 	public ModelAndView adminpanel(){

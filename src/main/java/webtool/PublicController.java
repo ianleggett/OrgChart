@@ -38,6 +38,7 @@ import webtool.pojo.MermaidData;
 import webtool.pojo.OrgContainer;
 import webtool.pojo.RespStatus;
 import webtool.pojo.TableData;
+import webtool.pojo.UpdateLog;
 import webtool.pojo.UserAndRole;
 import webtool.pojo.ViewByType;
 import webtool.pojo.WebEmployeeTeams;
@@ -245,6 +246,37 @@ public class PublicController {
 		setSessionDetails(request,mv,viewName,null);
 		return mv;
 	}
+
+	/**
+	 * Return last months worth of import logs ???
+	 * @return
+	 */
+	@RequestMapping(value = "/importlog.json", method = RequestMethod.GET)
+	@ResponseBody
+	public TableData<UpdateLog> getImportLog() {		
+		return new TableData<UpdateLog>(coreDAO.getImportLog());
+	}
+	
+	/**
+	 * return last months worth of add/delete members
+	 * @return
+	 */
+	@RequestMapping(value = "/updatelog.json", method = RequestMethod.GET)
+	@ResponseBody
+	public TableData<UpdateLog> getUpdateLog() {				
+		return new TableData<UpdateLog>(coreDAO.getUpdateLog());
+	}
+	
+	/**
+	 * return last months worth movers
+	 * @return
+	 */
+	@RequestMapping(value = "/changelog.json", method = RequestMethod.GET)
+	@ResponseBody
+	public TableData<UpdateLog> getChangeLog() {				
+		return new TableData<UpdateLog>(coreDAO.getMoversLog());
+	}
+	
 	
 	@RequestMapping(value = "/orgdata_gojs.json", method = RequestMethod.GET)
 	@ResponseBody

@@ -32,6 +32,10 @@ public class Employee {
 	String grp;
 	String func;
 
+	public String getDisplayName() {
+		return getFirstName()+" "+getLastName();
+	}
+	
 	public static Employee from(Person per) {
 		return new Employee(per.iNum, per.firstName, per.lastName, per.city, per.contrType, per.descr, per.jobCat,
 				per.jobTitle, per.started, per.geoReg, per.email, per.vendor,per.group,per.func, per.isLeaver());

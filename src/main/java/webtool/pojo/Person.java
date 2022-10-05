@@ -81,16 +81,16 @@ public class Person {
 		per.setMgrName(rec.get("Mgr Name"));
 		per.setMgriNum(rec.get("Mgr ID"));
 		
-		if (rec.isMapped("group")) {	
-			per.setGroup(rec.get("group"));
+		if (rec.isMapped("Department")) {	
+			per.setGroup(rec.get("Department"));
 		}else {
-			per.setGroup(rec.get("Team"));
+			per.setGroup(rec.get("group"));
 		}
 
-		if (rec.isMapped("dept")) {	
-			per.setFunc(rec.get("dept"));
+		if (rec.isMapped("Functional Team")) {	
+			per.setFunc(rec.get("Functional Team"));
 		}else {		
-			per.setFunc(rec.get("Function"));
+			per.setFunc(rec.get("dept"));
 		}
 		return per;
 	}

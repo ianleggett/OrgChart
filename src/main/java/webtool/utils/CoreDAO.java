@@ -42,6 +42,8 @@ import webtool.pojo.Person;
 import webtool.pojo.ProcStatus;
 import webtool.pojo.RespStatus;
 import webtool.pojo.TableData;
+import webtool.pojo.UpdateLog;
+import webtool.pojo.UpdateType;
 import webtool.pojo.UtilAggCount;
 import webtool.pojo.ViewByType;
 import webtool.pojo.WebEmployeeTeams;
@@ -53,6 +55,7 @@ import webtool.repository.OrgContainerRepository;
 import webtool.repository.OrgViewItemRepository;
 import webtool.repository.OrgViewRepository;
 import webtool.repository.PaymentTypeRepository;
+import webtool.repository.UpdateLogRepository;
 import webtool.repository.UserRepository;
 import webtool.security.SecurityUserDetailInterface;
 import webtool.service.DataLoaderService;
@@ -118,6 +121,9 @@ public class CoreDAO {
 	OrgContainerRepository orgContainerRepository;
 	@Autowired
 	OrgViewRepository orgViewRepository;
+	
+	@Autowired
+	UpdateLogRepository updateLogRepository;
 
 	// private ThreadedQueueProcessor<TradeCmd> qProc;
 	final ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -139,12 +145,22 @@ public class CoreDAO {
 		return dataloaderService;
 	}
 
-	public List<OrgContainer> getAggContainerData(String viewName) {
-		
+	public List<OrgContainer> getAggContainerData(String viewName) {		
 		return orgContainerRepository.findByViewTeamSorted(viewName);
-
 	}
 
+	
+	public List<UpdateLog> getImportLog(){
+		return updateLogRepository.findAllByType( List.of(UpdateType.IMPORT_STAFF.ordinal()) );
+	}
+	
+	public List<UpdateLog> getUpdateLog(){
+		return updateLogRepository.findAllByType( List.of(UpdateType.STAFF_ADDED.ordinal(),UpdateType.STAFF_REMOVED.ordinal()) );
+	}
+	
+	public List<UpdateLog> getMoversLog(){
+		return updateLogRepository.findAllByType( List.of(UpdateType.STAFF_MOVED_FROM.ordinal(), UpdateType.STAFF_MOVED_TO.ordinal()) );
+	}
 	/**
 	 * Match string with delimter
 	 *  str = 'valuations' filt = 'valuations/another team' == match
@@ -262,6 +278,11 @@ public class CoreDAO {
 	public RespStatus updateStaffContainer(WebEmployeeTeams empView) {
 		final String viewName = empView.getView();
 		
+		Optional<Employee> thisEmployee = employeeRepositiory.findById(empView.getInum());
+		if (!thisEmployee.isPresent()) {
+			return new RespStatus(99,"User " + empView.getInum() + " not found");
+		}
+		final Employee emp = thisEmployee.get();
 		// get existing container assignment
 		List<OrgViewItem> ovItemList = orgViewItemRepository.findByviewNameAndiNum(viewName, empView.getInum());
 		Map<Long,OrgViewItem> ovContainerMap = ovItemList.stream().collect(Collectors.toMap(OrgViewItem::getContainerId, it -> it));
@@ -272,6 +293,11 @@ public class CoreDAO {
 			if (!ovCidMap.containsKey(ovi.getContainerId())) {
 				// need to delete
 				orgViewItemRepository.deleteById(ovi.getId());
+				// following code is just for audit
+				Optional<OrgContainer> orgContOpt = orgContainerRepository.findById(viewName, ovi.getContainerId());
+				if (orgContOpt.isPresent()) {
+					updateLogRepository.save(new UpdateLog(UpdateType.STAFF_MOVED_FROM, orgContOpt.get().getTeamName(), emp.getDisplayName() + " ("+empView.getInum()+")"  ));
+				}				
 			}
 		}
 		
@@ -285,7 +311,8 @@ public class CoreDAO {
 					OrgViewItem saveOrgItem = orgViewItemRepository.save(new OrgViewItem(viewName,empView.getInum(), orgContOpt.get().getId()));
 					saveOrgItem.setContainerId(oc.getId());
 					saveOrgItem = orgViewItemRepository.save(saveOrgItem);
-					log.info("Adding " + empView.getInum());					
+					log.info("Adding " + empView.getInum());
+					updateLogRepository.save(new UpdateLog(UpdateType.STAFF_MOVED_TO, orgContOpt.get().getTeamName(), emp.getDisplayName() + " ("+empView.getInum()+")" ));
 				}				
 			}else {
 				return new RespStatus(987, "container not found");

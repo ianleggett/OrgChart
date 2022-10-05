@@ -18,6 +18,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
+import org.apache.taglibs.standard.tag.el.sql.UpdateTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,8 @@ import com.google.common.collect.ImmutableList;
 
 import webtool.pojo.Employee;
 import webtool.pojo.TeamCSV;
+import webtool.pojo.UpdateLog;
+import webtool.pojo.UpdateType;
 import webtool.pojo.OrgContainer;
 import webtool.pojo.OrgView;
 import webtool.pojo.OrgViewItem;
@@ -34,6 +37,7 @@ import webtool.repository.EmployeeRepository;
 import webtool.repository.OrgContainerRepository;
 import webtool.repository.OrgViewItemRepository;
 import webtool.repository.OrgViewRepository;
+import webtool.repository.UpdateLogRepository;
 import webtool.utils.CoreDAO;
 
 @Service("DataLoaderService")
@@ -51,13 +55,20 @@ public class DataLoaderService {
 	@Autowired
 	OrgContainerRepository orgContainerRepository;
 
+	@Autowired
+	UpdateLogRepository updateLogRepository;
+	
 	static final String EMPL_FILE = "/home/ian/Downloads/PDT_PA_Teams_Mapping_Line Managers.csv";
 	static final String GRP_FILE = "/home/ian/Downloads/PDT-default-group.csv";
 	// static final String FILE = "/Users/i34976/Downloads/PDT_test.csv";
 
+//	public static final List<String> STAFF_HDR = List.of("Leaver/Active", "ID", "First Name", "Last Name", "City Descr",
+//			"Descr", "Contract Type", "Job Category", "Job Title", "Service Dt", "Geographic Reg", "Email ID", "Vendor",
+//			"Mgr Name", "Mgr ID", "Function", "Team");
 	public static final List<String> STAFF_HDR = List.of("Leaver/Active", "ID", "First Name", "Last Name", "City Descr",
 			"Descr", "Contract Type", "Job Category", "Job Title", "Service Dt", "Geographic Reg", "Email ID", "Vendor",
-			"Mgr Name", "Mgr ID", "Function", "Team");
+			"Mgr Name", "Mgr ID", "Functional Team", "Department");
+	
 	public static final List<String> GROUP_HDR = List.of("ID", "team-name");
 	// Team by org chart (level1) ,Department (Level 2), Team Name (Level 3)
 
@@ -96,6 +107,13 @@ public class DataLoaderService {
 							sb.append("OK<br/>");
 							RespStatus res = validateCSV(destFile, STAFF_HDR); 
 							if (res.getStatusCode()==0) {
+								List<Employee> newAdd = new ArrayList<Employee>();
+								List<Employee> newDel = new ArrayList<Employee>();
+								// grab a copy of who is here
+								Iterable<Employee> empIter = employeeRepository.findAll();
+								Map<String,Employee> oldEmpMap = new HashMap<String,Employee>();								
+								empIter.forEach( t-> oldEmpMap.put(t.getInum(),t) );
+								
 								sb.append(res.getMsg());
 								sb.append("Clearing employee data...");
 								employeeRepository.deleteAll();
@@ -104,6 +122,26 @@ public class DataLoaderService {
 								final long prodCount = loadStaff(destFile);
 								sb.append("OK, loaded " + prodCount + " <br/>");
 								sb.append("Complete !! <br/>");
+								
+								updateLogRepository.save( new UpdateLog(UpdateType.IMPORT_STAFF, "" , "staff import loaded " + prodCount ));
+								
+								// now reconcile the changes and log in the log
+								Map<String,Employee> newEmpMap = new HashMap<String,Employee>();	
+								empIter = employeeRepository.findAll();							
+								empIter.forEach( t-> newEmpMap.put(t.getInum(),t) );
+								
+								newEmpMap.forEach( (k,v) ->{
+									if ( !oldEmpMap.containsKey( k )) {
+										// its an add
+										updateLogRepository.save( new UpdateLog(UpdateType.STAFF_ADDED, k , v.getFirstName() + " " + v.getLastName() ));
+									}
+								});
+								oldEmpMap.forEach( (k,v) ->{
+									if ( !newEmpMap.containsKey( k )) {
+										// its a delete
+										updateLogRepository.save( new UpdateLog(UpdateType.STAFF_REMOVED, k , v.getFirstName() + " " + v.getLastName() ));
+									}
+								});
 							}else {
 								sb.append(res.getMsg());	
 							}
@@ -149,7 +187,7 @@ public class DataLoaderService {
 					final long prodCount = loadGroupData(viewName, destFile, sb);
 					sb.append("OK, loaded " + prodCount + " <br/>");
 					sb.append("Complete !! <br/>");
-
+					updateLogRepository.save( new UpdateLog(UpdateType.IMPORT_ASPECT, "" , "loaded " + prodCount));
 				} else {
 					sb.append("FAIL<br/>Problem with uploaded file");
 				}
