@@ -50,27 +50,6 @@ public class UtilsWeb {
 		}
 	}
 	
-//	public final static EnumSet<ItemStatus> canMove = EnumSet.of(ItemStatus.HOLD,ItemStatus.PLACED,ItemStatus.NO_STOCK, ItemStatus.PICKED, ItemStatus.MACHINED,ItemStatus.READY,ItemStatus.TAKEN,ItemStatus.CANCELLED);
-//	public final static EnumSet<ItemStatus> cancelSet = EnumSet.of(ItemStatus.PLACED, ItemStatus.PICKED, ItemStatus.IN_STOCK,ItemStatus.NO_STOCK);	
-//	public final static EnumSet<ItemStatus> collectSet = EnumSet.of(ItemStatus.PLACED, ItemStatus.PICKED, ItemStatus.MACHINED,ItemStatus.READY);
-//	public final static EnumSet<ItemStatus> returnSet = EnumSet.of(ItemStatus.PLACED, ItemStatus.PICKED, ItemStatus.MACHINED,ItemStatus.READY);
-//	public final static EnumSet<ItemStatus> uncancelSet = EnumSet.of(ItemStatus.CANCELLED);
-//	
-//	public static final Map<ItemStatus,EnumSet<ItemStatus>> nextMove = ImmutableMap.<ItemStatus,EnumSet<ItemStatus>>builder()
-//			.put(ItemStatus.CANCELLED, 	EnumSet.of(ItemStatus.PLACED))
-//			.put(ItemStatus.HOLD, 		EnumSet.of(ItemStatus.UNCANCEL,ItemStatus.PLACED))
-//			.put(ItemStatus.PLACED, 	EnumSet.of(ItemStatus.IN_STOCK, ItemStatus.CANCELLED, ItemStatus.NO_STOCK, ItemStatus.PICKED,ItemStatus.MACHINED, ItemStatus.READY, ItemStatus.TAKEN))
-//			.put(ItemStatus.PICKED, 	EnumSet.of(ItemStatus.PLACED,ItemStatus.MACHINED,ItemStatus.READY, ItemStatus.TAKEN))
-//			.put(ItemStatus.MACHINED, 	EnumSet.of(ItemStatus.PICKED,ItemStatus.READY, ItemStatus.TAKEN))
-//			.put(ItemStatus.READY, 		EnumSet.of(ItemStatus.MACHINED,ItemStatus.TAKEN,ItemStatus.CANCELLED))
-//			.put(ItemStatus.TAKEN, 		EnumSet.of(ItemStatus.RETURNED))
-//			
-//			.put(ItemStatus.RETURNED,   EnumSet.of(ItemStatus.PLACED,ItemStatus.CANCELLED))
-//			.put(ItemStatus.UNCANCEL,   EnumSet.of(ItemStatus.PLACED))
-//			.put(ItemStatus.IN_STOCK,   EnumSet.of(ItemStatus.PLACED,ItemStatus.TAKEN))
-//			.put(ItemStatus.NO_STOCK,   EnumSet.of(ItemStatus.PICKED, ItemStatus.PLACED, ItemStatus.CANCELLED))
-//			.build();
-	
 	static Logger log = Logger.getLogger(UtilsWeb.class);
 
 	

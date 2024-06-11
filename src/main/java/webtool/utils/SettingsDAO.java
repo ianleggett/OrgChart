@@ -252,11 +252,6 @@ public class SettingsDAO {
 		}
 		return serverFile;
 	}
-
-	private void setCryptoDefaults(CryptoSettings cset) {
-		cset.setConfig("local", new CryptNetworkConfig()); 
-		cset.setSelectedProfile("local");		
-	}
 	
 	private void setPrivateKeyDefaults(PrivateKeys pvt) {
 		pvt.setKey("local","36bc12b5a33d43792985e95d56dd73d110259d6d952cbdfa7587fe2bae95c634");		

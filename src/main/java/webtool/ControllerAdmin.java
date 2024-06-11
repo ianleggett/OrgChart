@@ -121,28 +121,7 @@ public class ControllerAdmin {
 		return emailDAO.setEmailState(id,nextState);
 		
 	}
-	
-	@Secured({ "ROLE_ADMIN", "ROLE_STAFF" })
-	@RequestMapping(value = "/ctr_pre")
-	public ModelAndView ctr_pre() {
-		return new ModelAndView("ctr_pre");
-	}
-	
-
-	@RequestMapping(value = "/fact_emails")
-	public ModelAndView fact_emails()  {
-		ModelAndView mv = new ModelAndView("fact_emails");		
-		return mv;
-	}
-	
-	@Secured({ "ROLE_ADMIN", "ROLE_STAFF" })
-	@RequestMapping(value = "/arbconsole")
-	public ModelAndView arbconsole()  {
-		ModelAndView mv = new ModelAndView("arbconsole");		
-		return mv;
-	}
-	
-	
+		
 	@RequestMapping(value = "/admin_main")
 	public ModelAndView admin_main() throws IOException {
 		ModelAndView mv = new ModelAndView("admin_main");

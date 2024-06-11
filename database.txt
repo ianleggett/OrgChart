@@ -1,0 +1,4 @@
+CREATE DATABASE orgchart;
+create USER 'robot'@'localhost' IDENTIFIED BY 'robot';
+GRANT ALL on orgchart.* TO 'robot'@'localhost';
+FLUSH PRIVILEGES;

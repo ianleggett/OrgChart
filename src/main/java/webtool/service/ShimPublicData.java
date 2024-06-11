@@ -34,7 +34,6 @@ import webtool.repository.CcyRepository;
 import webtool.repository.PaymentTypeRepository;
 import webtool.repository.UserRepository;
 import webtool.security.SecurityUserDetailInterface;
-import webtool.utils.CryptNetworkConfig;
 import webtool.utils.Settings;
 import webtool.utils.SettingsDAO;
 import webtool.utils.UserObjectDAO;

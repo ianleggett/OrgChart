@@ -10,7 +10,6 @@ import webtool.pojo.RespStatus;
 import webtool.pojo.UserAndRole;
 import webtool.pojo.WebKeyValue;
 import webtool.security.SecurityUserDetailInterface;
-import webtool.utils.CryptNetworkConfig;
 import webtool.utils.Settings;
 import webtool.utils.SettingsDAO;
 import webtool.utils.UtilsWeb;

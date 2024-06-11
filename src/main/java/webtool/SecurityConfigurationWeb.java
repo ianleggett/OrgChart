@@ -24,8 +24,6 @@ import webtool.security.SecurityUserDetailService;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfigurationWeb extends WebSecurityConfigurerAdapter {
 
-	//@Autowired
-	//AuthenticationSuccessHandler customizeAuthenticationSuccessHandler;
 	@Autowired
 	AuthenticationFailureHandler customAuthenticationFailureHandler;
 	
